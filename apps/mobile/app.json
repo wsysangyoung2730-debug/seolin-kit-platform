@@ -7,10 +7,38 @@
     "orientation": "default",
     "userInterfaceStyle": "light",
     "icon": "./assets/seolin-kit-icon.png",
-    "ios": { "supportsTablet": true, "bundleIdentifier": "com.seolin.kit.dev" },
-    "android": { "package": "com.seolin.kit.dev" },
-    "web": { "bundler": "metro", "output": "single", "favicon": "./assets/seolin-kit-icon.png" },
-    "plugins": ["expo-router"],
-    "experiments": { "typedRoutes": true }
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.seolin.kit.dev",
+      "requireFullScreen": true
+    },
+    "android": {
+      "package": "com.seolin.kit.dev"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/seolin-kit-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "DEFAULT"
+        }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "enableBackgroundPlayback": false
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
