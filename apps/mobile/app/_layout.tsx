@@ -1,6 +1,11 @@
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-
+import { Stack } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import { LibraryProvider } from "../src/state/library";
 export default function RootLayout() {
-  return <><StatusBar style="dark" /><Stack screenOptions={{ headerShown: false }} /></>;
+  return (
+    <LibraryProvider>
+      <StatusBar style="dark" />
+      <Stack screenOptions={{ headerShown: false }} />
+    </LibraryProvider>
+  );
 }
