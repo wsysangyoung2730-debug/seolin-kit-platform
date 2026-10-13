@@ -1,0 +1,15 @@
+{
+  "name": "seolin-kit-platform",
+  "private": true,
+  "packageManager": "pnpm@11.25.0",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "dev": "pnpm --filter @seolin/mobile start",
+    "web": "pnpm --filter @seolin/mobile web",
+    "typecheck": "pnpm --filter @seolin/mobile typecheck",
+    "test": "vitest run --passWithNoTests",
+    "check": "pnpm typecheck && pnpm test",
+    "export": "pnpm --filter @seolin/mobile export"
+  },
+  "devDependencies": { "typescript": "~5.9.3", "vitest": "^3.2.4" }
+}

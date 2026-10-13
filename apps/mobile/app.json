@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "서린킷",
+    "slug": "seolin-kit",
+    "scheme": "seolinkit",
+    "version": "0.1.0",
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/seolin-kit-icon.png",
+    "ios": { "supportsTablet": true, "bundleIdentifier": "com.seolin.kit.dev" },
+    "android": { "package": "com.seolin.kit.dev" },
+    "web": { "bundler": "metro", "output": "single", "favicon": "./assets/seolin-kit-icon.png" },
+    "plugins": ["expo-router"],
+    "experiments": { "typedRoutes": true }
+  }
+}

@@ -1,0 +1,15 @@
+node_modules/
+.expo/
+dist/
+web-build/
+coverage/
+test-results/
+playwright-report/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+*.log
+.DS_Store
+apps/mobile/android/
+apps/mobile/ios/
