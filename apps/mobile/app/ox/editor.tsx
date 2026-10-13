@@ -39,7 +39,10 @@ function EditorForm() {
   const [bulk, setBulk] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
-  const [removed, setRemoved] = useState<typeof draft.questions | null>(null);
+  const [removed, setRemoved] = useState<{
+    question: (typeof draft.questions)[number];
+    index: number;
+  } | null>(null);
   function patch(id: string, part: { text?: string; answer?: Answer }) {
     setDraft((d) => ({
       ...d,
@@ -108,7 +111,7 @@ function EditorForm() {
               label={`${i + 1}번 삭제`}
               disabled={busy}
               onPress={() => {
-                setRemoved(draft.questions);
+                setRemoved({ question: q, index: i });
                 setDraft((d) => ({
                   ...d,
                   questions: d.questions.filter((x) => x.id !== q.id),
@@ -143,9 +146,13 @@ function EditorForm() {
         <Button
           secondary
           label="방금 삭제한 문제 복원"
-          disabled={busy}
+          disabled={busy || draft.questions.length >= 100}
           onPress={() => {
-            setDraft((d) => ({ ...d, questions: removed }));
+            setDraft((d) => {
+              const questions = [...d.questions];
+              questions.splice(removed.index, 0, removed.question);
+              return { ...d, questions };
+            });
             setRemoved(null);
           }}
         />

@@ -64,7 +64,11 @@ function Session({ lesson }: { lesson: Lesson }) {
                   );
               },
             );
-      void activateKeepAwakeAsync("ox-class").catch(() => {});
+      void activateKeepAwakeAsync("ox-class")
+        .then(() => {
+          if (disposed) return deactivateKeepAwake("ox-class");
+        })
+        .catch(() => {});
       void setAudioModeAsync({
         playsInSilentMode: true,
         shouldPlayInBackground: false,
@@ -78,17 +82,20 @@ function Session({ lesson }: { lesson: Lesson }) {
           player.pause();
         }
       });
-      const back = BackHandler.addEventListener("hardwareBackPress", () => {
-        requestExit();
-        return true;
-      });
+      const back =
+        Platform.OS === "android"
+          ? BackHandler.addEventListener("hardwareBackPress", () => {
+              requestExit();
+              return true;
+            })
+          : undefined;
       return () => {
         disposed = true;
         setFocused(false);
         send("pause");
         player.pause();
         subscription.remove();
-        back.remove();
+        back?.remove();
         void deactivateKeepAwake("ox-class").catch(() => {});
         void orientation
           .then(() =>
@@ -107,6 +114,7 @@ function Session({ lesson }: { lesson: Lesson }) {
   const previousBeep = useRef("");
   useEffect(() => {
     let cancelled = false;
+    if (game.phase === "ready") previousBeep.current = "";
     const cue = `${game.index}-${game.phase}-${seconds}`;
     if (
       focused &&
