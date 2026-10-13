@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Path, Rect, Circle } from "react-native-svg";
 import { router } from "expo-router";
-import type { PropsWithChildren } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import type { MiniApp } from "@seolin/contracts";
 import { colors as c } from "@seolin/design-tokens";
 export { c };
