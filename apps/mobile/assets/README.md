@@ -12,3 +12,5 @@
 - `breaking-icon.png`: 가상격파 신규 로고. imagegen 내장 도구로 제작한 인디고 3D 아이콘.
 
 - `freeze-icon.png`: 무궁화꽃이 피었습니다 신규 로고. imagegen 내장 도구로 제작한 인디고 3D 아이콘.
+
+- `initials-icon.png`: 초성퀴즈 신규 로고. imagegen 내장 도구로 제작한 인디고 3D 아이콘.
