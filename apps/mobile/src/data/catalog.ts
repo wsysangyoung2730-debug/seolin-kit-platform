@@ -32,12 +32,13 @@ export const catalog: MiniApp[] = [
   {
     id: "freeze",
     name: "무궁화꽃이 피었습니다",
-    summary: "집중력과 순발력을 키우는 놀이",
-    description: "아이들과 함께하는 멈춤 놀이를 준비하고 있어요.",
+    summary: "움직이고 멈추며 집중력을 키워요",
+    description:
+      "무궁화 음원에 맞춰 움직이고 멈춰요. 카메라 동작 감지와 위반 표시, 음원·재생 속도·멈춤 시간·감지 민감도·거리 설정을 수업에 맞게 조절해요.",
     category: "game",
-    status: "coming-soon",
-    access: "undecided",
-    runtime: "native",
+    status: "available",
+    access: "free",
+    runtime: "bundled-html",
   },
   {
     id: "initials",
