@@ -26,5 +26,16 @@
     "mirror",
     "contBtn",
     "resetBtn"
+  ],
+  "initials": [
+    "len",
+    "sec",
+    "goal",
+    "rounds",
+    "word",
+    "accept",
+    "pass",
+    "next",
+    "again"
   ]
 }
