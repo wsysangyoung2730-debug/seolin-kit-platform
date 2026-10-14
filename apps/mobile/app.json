@@ -35,6 +35,15 @@
           "recordAudioAndroid": false,
           "enableBackgroundPlayback": false
         }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "수업 화면에 실시간 카메라를 표시하려면 카메라 접근을 허용해 주세요. 영상은 저장하거나 전송하지 않습니다.",
+          "microphonePermission": false,
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
       ]
     ],
     "experiments": {
