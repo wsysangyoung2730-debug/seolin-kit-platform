@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>가상 격파 · 서린태권도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#0B3C9C; --blue-deep:#06235E; --red:#E8302A; --gold:#FFC93C;
+  --panel:rgba(243,247,255,.94); --panel-ink:#0E1A33; --line:rgba(11,60,156,.18);
+  box-sizing:border-box;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --panel:rgba(8,20,48,.92); --panel-ink:#EAF1FF; --line:rgba(140,180,255,.22); }
+}
+:root[data-theme="dark"]{ --panel:rgba(8,20,48,.92); --panel-ink:#EAF1FF; --line:rgba(140,180,255,.22); }
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:var(--blue-deep);color:#fff;font-family:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;overflow:hidden}
+#stage{position:relative;height:100%;width:100%;overflow:hidden}
+canvas#view{position:absolute;inset:0;width:100%;height:100%;display:block}
+
+#hud{position:absolute;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 12px);display:none;justify-content:space-between;align-items:flex-start;padding:0 16px;pointer-events:none}
+.playing #hud{display:flex}
+.pill{font-family:"Black Han Sans",sans-serif;font-size:clamp(28px,5vw,64px);line-height:1;background:rgba(6,35,94,.65);padding:10px 22px;border-radius:999px;text-shadow:0 3px 12px rgba(0,0,0,.35)}
+.pill small{font-family:"IBM Plex Sans KR",sans-serif;font-weight:700;font-size:.38em;opacity:.8;margin-right:8px;vertical-align:middle}
+#time.low{color:var(--red);background:rgba(255,255,255,.9)}
+
+#big{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;pointer-events:none;font-family:"Black Han Sans",sans-serif;font-size:clamp(90px,22vw,300px);line-height:1;opacity:0;text-shadow:0 8px 40px rgba(0,0,0,.45)}
+#big.show{opacity:1;animation:pop .35s ease-out}
+@keyframes pop{from{transform:translateY(-50%) scale(1.3)}to{transform:translateY(-50%) scale(1)}}
+
+/* 게임 시작·설정 바: 대기 중엔 위, 게임 중(멈추기 버튼만)엔 아래 */
+#bar{position:absolute;left:0;right:0;top:0;zoom:var(--tvz,1);padding:calc(14px + env(safe-area-inset-top,0px)) 16px 14px;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;background:linear-gradient(180deg,rgba(6,35,94,.85),transparent)}
+.playing #bar{top:auto;bottom:0;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(0deg,rgba(6,35,94,.6),transparent)}
+.playing #bar{background:none}
+.playing #bar button:not(#stopBtn),.playing #bar .num{display:none}
+.num{white-space:nowrap;display:flex;align-items:center;gap:8px;font-weight:700;font-size:clamp(16px,1.7vw,22px);background:rgba(255,255,255,.14);border-radius:14px;padding:8px 14px}
+.num select{font:inherit;border:0;border-radius:10px;padding:6px 8px;background:#fff;color:#0E1A33}
+.num input{width:4.2em;font:inherit;text-align:center;border:0;border-radius:10px;padding:6px 4px;background:#fff;color:#0E1A33}
+button{font:inherit;font-weight:700;border:0;border-radius:14px;padding:14px 26px;font-size:clamp(16px,1.7vw,22px);cursor:pointer;color:#fff;background:var(--blue);box-shadow:0 4px 0 #041a47}
+button:active{transform:translateY(2px);box-shadow:0 2px 0 #041a47}
+button.ghost{background:rgba(255,255,255,.14);box-shadow:none}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+#settings{position:absolute;z-index:6;zoom:var(--tvz,1);right:16px;top:calc(var(--barH,84px) + 4px);width:min(360px,calc(100% - 32px));background:var(--panel);color:var(--panel-ink);border-radius:18px;padding:18px 20px;display:none;max-height:calc(100% - var(--barH,84px) - 20px);overflow:auto;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+#settings.open{display:block}
+#settings h3{margin:0 0 12px;font-size:18px}
+.row{margin:0 0 16px}
+.row label{display:flex;justify-content:space-between;font-weight:600;font-size:15px;margin-bottom:6px}
+.row small{display:block;opacity:.7;font-size:13px;margin-top:4px;line-height:1.45}
+input[type=range]{width:100%;accent-color:var(--blue)}
+select{width:100%;font:inherit;padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:transparent;color:inherit}
+select option{color:#0E1A33}
+.check{display:flex;gap:8px;align-items:center;font-weight:600;font-size:15px}
+
+.layer{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:24px}
+.layer.show{display:flex}
+#intro{background:var(--blue-deep)}
+#result{background:rgba(6,35,94,.82)}
+.card{max-width:580px;text-align:center}
+.card h1{font-family:"Black Han Sans",sans-serif;font-weight:400;font-size:clamp(44px,8vw,88px);line-height:1.05;margin:0 0 18px}
+.card p{font-size:clamp(16px,1.8vw,20px);line-height:1.65;margin:0 0 10px;color:#CFE0FF}
+.card .by{margin-top:28px;font-size:14px;color:#7FA6E8;letter-spacing:.04em}
+.card button{margin:22px 6px 0}
+#score2{font-family:"Black Han Sans",sans-serif;font-size:clamp(100px,20vw,240px);line-height:1;color:var(--gold);margin:4px 0 8px}
+.card,#caught .box{zoom:var(--tvz,1)}
+</style>
+<script>
+// 모든 게임 공통 카메라: 한 번 고른 카메라(slg-cam)를 모든 게임이 같이 씀 → 없으면 후면 카메라 우선
+const slgLS={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{v==null?localStorage.removeItem(k):localStorage.setItem(k,v)}catch(e){}}};
+async function slgOpenCam(deviceId,w,h,facing){
+  // 휴대폰·PC·TV 어디서든 켜지게: 기억한 카메라 → 후면 → 아무 카메라 → 가장 단순한 요청 → 남은 카메라 하나씩
+  const md=navigator.mediaDevices, old=navigator.getUserMedia||navigator.webkitGetUserMedia||navigator.mozGetUserMedia;
+  const gum=v=>md&&md.getUserMedia?md.getUserMedia({audio:false,video:v})
+    :old?new Promise((ok,no)=>old.call(navigator,{audio:false,video:v},ok,no)):Promise.reject({name:'NotFoundError'}); // 옛날 TV 브라우저용
+  const size={width:{ideal:w},height:{ideal:h}}, saved=deviceId||slgLS.get('slg-cam'), tries=[];
+  if(saved) tries.push({deviceId:{exact:saved},...size});
+  tries.push({facingMode:{ideal:facing||'environment'},...size}, size, true);
+  let err;
+  for(const v of tries){
+    try{ const s=await gum(v); if(deviceId&&v===tries[0]) slgLS.set('slg-cam',deviceId); return s; }
+    catch(e){ err=e; if(e&&(e.name==='NotAllowedError'||e.name==='SecurityError')) throw e; // 권한 거절이면 더 묻지 않음
+      if(saved&&v===tries[0]&&!deviceId) slgLS.set('slg-cam',null); } // 기억한 카메라가 빠졌으면 잊음
+  }
+  try{ for(const d of (await md.enumerateDevices()).filter(d=>d.kind==='videoinput')) try{ return await gum({deviceId:{exact:d.deviceId}}); }catch(e){} }catch(e){} // 다른 프로그램이 쓰는 카메라는 건너뜀
+  throw err;
+}
+const slgSet=s=>{ const t=s&&s.getVideoTracks()[0]; return t&&t.getSettings?t.getSettings():{}; }; // 지금 켜진 카메라 정보 (옛 브라우저는 빈 값)
+async function slgCams(){ try{ return (await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind==='videoinput'); }catch(e){ return []; } }
+</script>
+<script>
+// 음성 인식: 홈 화면이 하나만 계속 켜 두고 들린 말을 나눠 줌 → 게임을 옮겨도 끊기지 않고 시작하자마자 들림
+// (마이크 고르기·권한 허용은 홈 화면 [🎥 카메라 · 마이크]에서)
+try{ if(parent!==window&&parent.SlgSR) window.SpeechRecognition=window.webkitSpeechRecognition=parent.SlgSR; }catch(e){}
+function slgRecStart(rec){ (window.slgRecs=window.slgRecs||new Set).add(rec);
+  if(!rec.slgW){ rec.slgW=1; const h=rec.onresult; // slgFresh 순간에 말하던 문장만 건너뛰고 나머지는 게임에 넘김
+    rec.addEventListener('start',()=>{ rec.slgMark=rec.slgLast=null; }); // 새로 켜지면 하던 말은 끝난 것
+    rec.onresult=e=>{
+      const n=e.results.length, r=e.results[n-1], m=rec.slgMark; rec.slgLast=r&&{i:n-1,t:r[0].transcript,f:r.isFinal};
+      if(m){ const x=e.results[m.i]; // 번호가 아니라 내용으로 같은 문장인지 봄 (안드로이드는 새 말도 같은 번호로 보냄)
+        if(x&&e.resultIndex<=m.i&&slgSame(x[0].transcript,m.t)){ if(x.isFinal) rec.slgMark=null; Object.defineProperty(e,'resultIndex',{value:m.i+1}); }
+        else rec.slgMark=null; }
+      if(e.resultIndex<n&&h) h(e); }; }
+  try{ rec.start(); }catch(e){} } // 이미 듣는 중이면 무시
+const slgSame=(a,b)=>{ a=String(a).replace(/\s/g,''); b=String(b).replace(/\s/g,''); return a.startsWith(b)||b.startsWith(a); };
+function slgFresh(rec){ if(rec) rec.slgMark=rec.slgLast&&!rec.slgLast.f?{i:rec.slgLast.i,t:rec.slgLast.t}:null; } // 카운터 시작 순간: 그때 말하던 문장("시작" 등)만 버림
+const slgRecMsg=e=>({'not-allowed':'마이크 권한이 없어요. 홈 화면에서 [한 번에 허용하기]를 눌러 주세요','service-not-allowed':'이 브라우저는 음성 인식을 막고 있어요. 크롬이나 엣지로 열어 주세요',
+  'audio-capture':'마이크를 찾지 못했어요. 블루투스 마이크라면 기기의 기본 마이크로 연결돼 있는지 확인해 주세요','network':'음성 인식은 인터넷 연결이 필요해요'})[e.error]||'';
+// "시작"이라고 말하면 시작
+const slgSaidStart=t=>/시작|스타트|start/i.test(String(t).replace(/\s/g,''));
+function slgVoiceStart(fn){ // 음성 인식을 따로 안 쓰는 게임용: 계속 듣다가 "시작"이 들리면 fn()
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition; if(!SR) return;
+  const rec=new SR(); rec.lang='ko-KR'; rec.continuous=true; rec.interimResults=true; let on=true, last=0;
+  rec.onresult=e=>{ for(let i=e.resultIndex;i<e.results.length;i++) if(slgSaidStart(e.results[i][0].transcript)&&Date.now()-last>3000){ last=Date.now(); fn(); } };
+  rec.onerror=e=>{ if(e.error==='not-allowed'||e.error==='service-not-allowed') on=false; };
+  rec.onend=()=>{ if(on) setTimeout(()=>slgRecStart(rec),300); }; // 조용하면 끊기므로 다시 켬
+  slgRecStart(rec);
+}
+</script>
+<script>
+// 전체 화면 켜기/끄기 (게임 공통). 아이폰처럼 지원 안 하는 기기는 안내
+const SLG_NOFULL='이 기기(아이폰 등)는 브라우저 전체 화면을 지원하지 않아요. 공유 버튼 → 「홈 화면에 추가」로 열면 화면을 꽉 채워요.';
+function slgToggleFull(){
+  const d=document, el=d.documentElement, cur=d.fullscreenElement||d.webkitFullscreenElement, rq=el.requestFullscreen||el.webkitRequestFullscreen;
+  try{ const p=cur?(d.exitFullscreen||d.webkitExitFullscreen).call(d):rq?rq.call(el):(alert(SLG_NOFULL),null); p&&p.catch&&p.catch(()=>{}); }catch(e){}
+}
+</script>
+</head>
+<body>
+<div id="stage">
+  <canvas id="view"></canvas>
+  <div id="hud">
+    <div class="pill"><small id="scoreL">점수</small><span id="score">0</span></div>
+    <div class="pill" id="time"><small>남은 시간</small><span id="timeV">60</span></div>
+  </div>
+  <div id="big"></div>
+
+  <div id="bar">
+    <label class="num">방식 <select id="mode"><option value="rain">비 내리기</option><option value="pop">곳곳에 나타나기</option></select></label>
+    <label class="num">제한 시간 <input id="dur" type="number" min="5" max="600" step="5" value="60" inputmode="numeric"> 초</label>
+    <label class="num" title="0이면 목표 없이 시간 끝까지">목표 <input id="goal" type="number" min="0" max="999" value="30" inputmode="numeric"> 개</label>
+    <button id="startBtn">게임 시작</button>
+    <button id="stopBtn" class="ghost" hidden>그만하기</button>
+    <button id="fsBtn" class="ghost">전체 화면</button>
+    <button id="setBtn" class="ghost" aria-expanded="false" aria-controls="settings">설정</button>
+  </div>
+
+  <div id="settings" role="dialog" aria-label="게임 설정">
+    <h3>게임 설정</h3>
+    <div class="row">
+      <label for="count">[곳곳에 나타나기] 동시에 뜨는 개수 <span id="countV">8개</span></label>
+      <input id="count" type="range" min="2" max="15" value="8">
+    </div>
+    <div class="row">
+      <label for="amount">[비 내리기] 내리는 양 <span id="amountV">레벨 5</span></label>
+      <input id="amount" type="range" min="1" max="10" value="5">
+      <small>높을수록 한꺼번에 많이 쏟아집니다. 여러 명이 같이 할 때는 늘려 주세요.</small>
+    </div>
+    <div class="row">
+      <label for="speed">떨어지는 속도 <span id="speedV">레벨 5</span></label>
+      <input id="speed" type="range" min="1" max="10" value="5">
+      <small>[비 내리기] 게임 중에도 바로 적용됩니다.</small>
+    </div>
+    <div class="row">
+      <label for="size">표적 크기 <span id="sizeV">크게</span></label>
+      <input id="size" type="range" min="1" max="4" value="3">
+    </div>
+    <div class="row">
+      <label for="board">송판 비율 <span id="boardV">30%</span></label>
+      <input id="board" type="range" min="0" max="100" step="10" value="30">
+      <small>풍선 1점, 송판 2점. 송판은 더 세고 빠르게 쳐야 깨집니다.</small>
+    </div>
+    <div class="row"><label class="check"><input id="gold" type="checkbox" checked> 황금 풍선 가끔 등장 (+5점)</label></div>
+    <div class="row"><label class="check"><input id="bomb" type="checkbox"> 폭탄 섞기 (치면 −3점, 피해야 해요)</label></div>
+    <div class="row">
+      <label for="sens">감지 민감도 <span id="sensV">레벨 5</span></label>
+      <input id="sens" type="range" min="1" max="10" value="5">
+      <small>레벨이 높을수록 살짝만 스쳐도 터집니다. 저학년은 레벨 6~7, 고학년·유단자는 레벨 3~4를 추천합니다.</small>
+    </div>
+    <div class="row">
+      <label for="dist">카메라와 거리</label>
+      <select id="dist"><option value="1">가까이 (2~3m)</option><option value="2">멀리 (약 5m)</option><option value="3">아주 멀리 (약 10m)</option></select>
+      <small>아이들이 서 있는 거리에 맞추세요. 멀수록 작은 움직임도 잡도록 감지를 맞춥니다.</small>
+    </div>
+    <div class="row">
+      <label for="cam">카메라</label>
+      <select id="cam"></select>
+    </div>
+    <div class="row"><label class="check"><input id="sound" type="checkbox" checked> 효과음과 음성</label></div>
+    <div class="row"><label class="check"><input id="mirror" type="checkbox" checked> 거울처럼 좌우 반전</label></div>
+  </div>
+
+  <div id="intro" class="layer show">
+    <div class="card">
+      <h1>가상 격파</h1>
+      <p>하늘에서 비처럼 쏟아지거나, 화면 곳곳에 나타나는<br>풍선과 송판을 손이나 발로 힘차게 쳐서 터뜨리세요!</p>
+      <p>✨ 황금 풍선은 5점! 💣 폭탄은 피하세요.</p>
+      <p>제한 시간 안에 몇 개나 깨는지 겨뤄 봅시다.<br>카메라에서 5미터 안쪽에 온몸이 보이게 서 주세요. (거리는 설정에서 바꿀 수 있어요)</p>
+      <button id="camBtn">카메라 켜기</button>
+      <div class="by">SEOLIN TAEKWONDO</div>
+    </div>
+  </div>
+
+  <div id="result" class="layer">
+    <div class="card">
+      <h1 id="resTitle" style="font-size:clamp(36px,6vw,64px);margin:0">시간 끝!</h1>
+      <div id="score2">0</div>
+      <p id="detail"></p>
+      <p id="best"></p>
+      <button id="againBtn">다시 하기</button>
+      <button id="closeBtn" class="ghost">닫기</button>
+    </div>
+  </div>
+
+  <div id="err" class="layer">
+    <div class="card">
+      <h1 style="font-size:clamp(34px,5vw,56px)">카메라를 켤 수 없어요</h1>
+      <p id="errMsg">브라우저 주소창 옆의 카메라 권한을 허용한 뒤 다시 눌러 주세요.</p>
+      <button id="retryBtn">다시 시도</button>
+    </div>
+  </div>
+</div>
+
+<video id="video" playsinline muted autoplay style="display:none"></video>
+
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const stage=$('stage'), view=$('view'), vctx=view.getContext('2d'), video=$('video'), big=$('big');
+
+  // 움직임 감지: 작은 캔버스에서 직전 프레임과 비교
+  let SW=160, SH=90;
+  const small=document.createElement('canvas'); const sctx=small.getContext('2d',{willReadFrequently:true});
+  let prev=null, crop={sx:0,sy:0,sw:1,sh:1}, stream=null;
+
+  let running=false, endAt=0, score=0, nBalloon=0, nBoard=0, nGold=0, nBomb=0, flashUntil=0, targets=[], fx=[], timers=[];
+
+  // 설정
+  const SIZES={1:'작게',2:'보통',3:'크게',4:'아주 크게'};
+  const bind=(id,fmt)=>{const el=$(id), f=()=>$(id+'V').textContent=fmt(el.value); el.oninput=f; f(); return el;};
+  const sens=bind('sens',v=>'레벨 '+v), count=bind('count',v=>v+'개'), amount=bind('amount',v=>'레벨 '+v), speed=bind('speed',v=>'레벨 '+v), size=bind('size',v=>SIZES[v]), board=bind('board',v=>v+'%');
+  // 직접 입력한 값 다듬기 (빈칸·음수·너무 큰 값 방지)
+  const dur=$('dur'), goal=$('goal');
+  const clampIn=(el,lo,hi,def)=>el.onchange=()=>{ let v=Math.round(+el.value); el.value=isNaN(v)||el.value===''?def:Math.min(hi,Math.max(lo,v)); };
+  clampIn(dur,5,600,60); clampIn(goal,0,999,0);
+  const dist=$('dist'); dist.value=slgLS.get('gyeokpa-dist')||'2'; const K=()=>+dist.value; // 거리 배율: 1=2~3m, 2=약 5m, 3=약 10m
+  dist.onchange=()=>{ slgLS.set('gyeokpa-dist',dist.value); prev=null; };
+  $('setBtn').onclick=()=>{const o=$('settings').classList.toggle('open'); $('setBtn').setAttribute('aria-expanded',o);};
+  $('mirror').onchange=()=>{prev=null;};
+
+  // 소리
+  let actx=null;
+  function tone(freq,dur=.18,type='triangle',vol=.25){
+    if(!$('sound').checked) return;
+    try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+      const o=actx.createOscillator(), g=actx.createGain(); o.type=type; o.frequency.value=freq;
+      g.gain.setValueAtTime(vol,actx.currentTime); g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+dur);
+      o.connect(g).connect(actx.destination); o.start(); o.stop(actx.currentTime+dur);
+    }catch(e){}
+  }
+  function noise(dur=.15,vol=.4,hp=800){ // 펑/딱 소리
+    if(!$('sound').checked) return;
+    try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+      const n=actx.sampleRate*dur, buf=actx.createBuffer(1,n,actx.sampleRate), d=buf.getChannelData(0);
+      for(let i=0;i<n;i++) d[i]=(Math.random()*2-1)*Math.pow(1-i/n,3);
+      const s=actx.createBufferSource(), f=actx.createBiquadFilter(), g=actx.createGain();
+      s.buffer=buf; f.type='highpass'; f.frequency.value=hp; g.gain.value=vol;
+      s.connect(f).connect(g).connect(actx.destination); s.start();
+    }catch(e){}
+  }
+  function say(t){ if(!$('sound').checked||!window.speechSynthesis) return; try{speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t); u.lang='ko-KR'; u.rate=1.1; speechSynthesis.speak(u);}catch(e){} }
+
+  // 카메라
+  async function listCams(){
+    try{ const devs=await slgCams();
+      const sel=$('cam'), cur=stream&&slgSet(stream).deviceId;
+      sel.innerHTML=''; devs.forEach((d,i)=>{const o=document.createElement('option'); o.value=d.deviceId; o.textContent=d.label||('카메라 '+(i+1)); if(d.deviceId===cur)o.selected=true; sel.appendChild(o);});
+    }catch(e){}
+  }
+  async function startCam(deviceId){
+    if(stream) stream.getTracks().forEach(t=>t.stop());
+    stream=await slgOpenCam(deviceId,1280,720);
+    const fm=slgSet(stream).facingMode; if(fm) $('mirror').checked=fm==='user'; // 전면은 거울처럼, 후면은 그대로
+    video.srcObject=stream; await video.play().catch(()=>{}); prev=null; listCams();
+  }
+  $('cam').onchange=e=>startCam(e.target.value).catch(showErr);
+  function showErr(e){ $('err').classList.add('show'); $('intro').classList.remove('show');
+    if(e&&e.name==='NotFoundError') $('errMsg').textContent='연결된 카메라를 찾지 못했습니다. 웹캠을 연결한 뒤 다시 눌러 주세요.';
+    else if(e&&e.name==='NotAllowedError') $('errMsg').textContent='카메라 권한이 막혀 있습니다. 주소창 옆 자물쇠 아이콘에서 카메라를 허용한 뒤 다시 눌러 주세요.';
+  }
+  async function boot(){
+    try{ await startCam(); keepAwake(); $('intro').classList.remove('show'); $('err').classList.remove('show'); requestAnimationFrame(loop);}catch(e){showErr(e);}
+  }
+  $('camBtn').onclick=boot; $('retryBtn').onclick=boot;
+  boot(); // 들어오자마자 카메라 켜기
+
+  const root=document.documentElement, fsReq=root.requestFullscreen||root.webkitRequestFullscreen;
+  $('fsBtn').onclick=()=>{
+    const d=document;
+    if(d.fullscreenElement||d.webkitFullscreenElement) (d.exitFullscreen||d.webkitExitFullscreen).call(d);
+    else if(!fsReq) alert(SLG_NOFULL); // 아이폰 등
+    else Promise.resolve(fsReq.call(root)).then(()=>screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape')).catch(()=>{});
+  };
+  const keepAwake=()=>{ try{ navigator.wakeLock&&navigator.wakeLock.request('screen').catch(()=>{}); }catch(e){} };
+  document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible'&&stream) keepAwake(); });
+
+  // 화면 맞추기
+  function fit(){
+    const dpr=Math.min(window.devicePixelRatio||1,2), w=view.clientWidth, h=view.clientHeight;
+    if(view.width!==Math.round(w*dpr)||view.height!==Math.round(h*dpr)){view.width=Math.round(w*dpr);view.height=Math.round(h*dpr);prev=null;}
+    const vw=video.videoWidth, vh=video.videoHeight; if(!vw) return false;
+    const ar=view.width/view.height, va=vw/vh;
+    if(va>ar){crop.sh=vh;crop.sw=vh*ar;crop.sx=(vw-crop.sw)/2;crop.sy=0;} else {crop.sw=vw;crop.sh=vw/ar;crop.sx=0;crop.sy=(vh-crop.sh)/2;}
+    SW=160*K(); const nh=Math.max(40,Math.round(SW/ar)); // 멀수록 더 촘촘하게 봄 if(nh!==SH||small.width!==SW){SH=nh; small.width=SW; small.height=SH; prev=null;}
+    return true;
+  }
+  function drawVideo(ctx,w,h){
+    ctx.save(); if($('mirror').checked){ctx.translate(w,0);ctx.scale(-1,1);}
+    ctx.drawImage(video,crop.sx,crop.sy,crop.sw,crop.sh,0,0,w,h); ctx.restore();
+  }
+  function grab(){ drawVideo(sctx,SW,SH); const d=sctx.getImageData(0,0,SW,SH).data; const g=new Uint8Array(SW*SH);
+    for(let i=0,j=0;i<d.length;i+=4,j++) g[j]=(d[i]*77+d[i+1]*150+d[i+2]*29)>>8; return g; }
+
+  // 표적 (좌표는 화면 비율 0~1, r은 화면 높이 기준)
+  // 비처럼: 화면 위쪽 바깥에서 생겨서 아래로 떨어짐
+  const PULSE=1.25; // 가장 커질 때 배율
+  const modeSel=$('mode');
+  try{ modeSel.value=localStorage.getItem('gyeokpa-mode')||'rain'; }catch(e){}
+  modeSel.onchange=()=>{ try{ localStorage.setItem('gyeokpa-mode',modeSel.value); }catch(e){} };
+  const fallSpeed=()=>.08+speed.value*.04;  // 1초에 화면 높이의 몇 배만큼 떨어지나. 레벨 1 → 0.12, 5 → 0.28, 10 → 0.48
+  const rainRate=()=>.3*amount.value;        // 1초에 몇 개. 레벨 1 → 0.3개, 5 → 1.5개, 10 → 3개
+  let nextSpawn=0;
+  function pickKind(){ // 황금 6%, 폭탄 12%, 나머지는 송판 비율대로
+    const r=Math.random();
+    if($('gold').checked&&r<.06) return 'gold';
+    if($('bomb').checked&&r>.88) return 'bomb';
+    return Math.random()*100<+board.value?'board':'balloon';
+  }
+  function spawn(now){
+    const kind=pickKind(), isBoard=kind==='board', ar=view.width/view.height, w=isBoard?1.3:.85; // w: 가로 반지름 배율
+    const base=[0,.1,.13,.16,.2][size.value]*(.7+Math.random()*.6); // 하나하나 크기가 다름
+    const R=base*PULSE, rx=Math.min(.45,R*w/ar), y=-R*1.2;
+    // 후보 중 다른 표적과 가장 먼 곳 (겹치지 않게, 가로로 고르게)
+    let bestX=null, bestD=0;
+    for(let i=0;i<20;i++){
+      const x=rx+Math.random()*(1-2*rx);
+      let d=Infinity;
+      for(const t of targets) d=Math.min(d,Math.hypot((t.x-x)*ar,t.y-y)-(t.base*PULSE*(t.board?1.3:.85)+R*w+.01));
+      if(d>0&&d>bestD){bestD=d; bestX=x;}
+    }
+    if(bestX===null) return false;
+    targets.push({x:bestX,y,base,r:base,kind,board:isBoard,born:now,vy:.75+Math.random()*.5,hue:Math.random()*360,tilt:(Math.random()-.5)*.5,
+      sp:.002+Math.random()*.004, ph:Math.random()*6.3, sway:Math.random()*6.3});
+    return true;
+  }
+
+  let recent=[]; // 방금 깬 자리 (같은 자리에 바로 또 안 나오게)
+  function spawnPop(now){
+    const kind=pickKind(), isBoard=kind==='board', ar=view.width/view.height, w=isBoard?1.3:.85;
+    let base=[0,.1,.13,.16,.2][size.value]*(.7+Math.random()*.6);
+    recent=recent.filter(p=>now-p.t<2500);
+    // 자리가 없으면 조금씩 작게 만들어서 다시 찾음 → 정한 개수를 최대한 채움
+    for(let shrink=0;shrink<4;shrink++,base*=.8){
+      const R=base*PULSE, rx=R*w/ar, ry=R*(isBoard?.8:1.1);
+      if(rx*2>=1||.16+R+ry>=.92) continue;
+      let bestP=null, bestD=0;
+      for(let i=0;i<40;i++){
+        const x=rx+Math.random()*(1-2*rx), y=.16+R+Math.random()*(.92-.16-R-ry); // 위쪽 점수판, 아래쪽 버튼 피함
+        let d=Infinity;
+        for(const t of targets) d=Math.min(d,Math.hypot((t.x-x)*ar,t.y-y)-(t.base*PULSE*(t.board?1.3:.85)+R*w+.01));
+        for(const p of recent) d=Math.min(d,Math.hypot((p.x-x)*ar,p.y-y)-R*.8);
+        if(d>0&&d>bestD){bestD=d; bestP={x,y};}
+      }
+      if(bestP){
+        targets.push({...bestP,base,r:base,kind,board:isBoard,born:now,life:3500+Math.random()*2500,vy:0,hue:Math.random()*360,tilt:(Math.random()-.5)*.5,
+          sp:.002+Math.random()*.004, ph:Math.random()*6.3, sway:0});
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function detect(now){
+    const g=grab(); if(!prev){prev=g; return;}
+    const L=+sens.value, k=K(), pixT=(50-L*3)*(1.1-k*.1); // 레벨 1 → 47, 레벨 10 → 20 (멀면 흐릿해서 조금 낮춤)
+    const need=Math.max(.03,(.34-L*.022)/(k*k)); // 표적 영역 중 움직인 비율. 레벨 1 → 0.32, 레벨 10 → 0.12. 멀면 사람이 작게 보이니 거리² 만큼 낮춤
+    let all=0; for(let j=0;j<g.length;j+=7) if(Math.abs(g[j]-prev[j])>pixT) all++;
+    const camBump=all/(g.length/7)>.6; // 조명·카메라 흔들림이면 판정 안 함
+    if(!camBump) for(const t of targets){
+      if(t.y<0||now-t.born<350) continue; // 화면에 들어오기 전·막 나타난 직후엔 판정 안 함
+      const cx=t.x*SW, cy=t.y*SH, ry=t.r*SH*(t.board?.8:1), rx=ry*(t.board?1.3:.85);
+      let n=0, m=0;
+      for(let y=Math.max(0,cy-ry|0);y<Math.min(SH,cy+ry);y++) for(let x=Math.max(0,cx-rx|0);x<Math.min(SW,cx+rx);x++){
+        if(!t.board&&((x-cx)/rx)**2+((y-cy)/ry)**2>1) continue;
+        n++; const j=y*SW+x; if(Math.abs(g[j]-prev[j])>pixT) m++;
+      }
+      const hit=n&&m/n>(t.board?Math.min(.6,need*1.6):need);
+      if(hit) smash(t,now);
+    }
+    prev=g;
+  }
+  function smash(t,now){
+    targets.splice(targets.indexOf(t),1); if(modeSel.value==='pop') recent.push({x:t.x,y:t.y,t:now});
+    const W=view.width,H=view.height, x=t.x*W, y=t.y*H, R=t.r*H;
+    if(t.kind==='bomb'){ // 폭탄: 감점
+      score=Math.max(0,score-3); nBomb++; showScore();
+      noise(.45,.8,60); tone(70,.4,'sawtooth',.35);
+      for(let i=0;i<22;i++){const a=Math.random()*Math.PI*2, v=(.5+Math.random())*R*.16; fx.push({kind:'bit',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,hue:15+Math.random()*30,born:now});}
+      fx.push({kind:'txt',x,y,txt:'−3',color:'#FF5A4F',born:now}); flashUntil=now+250; return;
+    }
+    const pts=t.kind==='gold'?5:t.board?2:1; score+=pts; t.board?nBoard++:t.kind==='gold'?nGold++:nBalloon++; showScore();
+    if(t.kind==='gold'){ [988,1319,1568].forEach((f,i)=>later(()=>tone(f,.15,'sine',.25),i*70)); }
+    if(t.board){
+      noise(.12,.6,300); tone(140,.15,'square',.3);
+      for(const s of [-1,1]) fx.push({kind:'half',x,y,R,s,vx:s*W*.004,vy:-H*.006,rot:t.tilt,vr:s*.12,born:now});
+    }else{
+      noise(.18,.5,1200);
+      for(let i=0;i<(t.kind==='gold'?28:14);i++){const a=Math.random()*Math.PI*2, v=(.4+Math.random())*R*.12; fx.push({kind:'bit',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,hue:t.kind==='gold'?45:t.hue,born:now});}
+    }
+    fx.push({kind:'txt',x,y,txt:'+'+pts,born:now});
+  }
+
+  function drawBalloon(t,now){
+    const W=view.width,H=view.height, x=t.x*W, y=t.y*H+Math.sin(now/400+t.hue)*H*.008, ry=t.r*H, rx=ry*.85;
+    vctx.save();
+    vctx.strokeStyle='rgba(255,255,255,.7)'; vctx.lineWidth=Math.max(1,H*.003);
+    vctx.beginPath(); vctx.moveTo(x,y+ry); vctx.quadraticCurveTo(x+rx*.3,y+ry*1.5,x,y+ry*2); vctx.stroke();
+    const g=vctx.createRadialGradient(x-rx*.35,y-ry*.4,ry*.1,x,y,ry*1.1);
+    if(t.kind==='gold'){ g.addColorStop(0,'#FFF6C8'); g.addColorStop(.5,'#FFD23F'); g.addColorStop(1,'#C98A00'); vctx.shadowColor='#FFD23F'; vctx.shadowBlur=ry*(.4+.25*Math.sin(now/120)); }
+    else { g.addColorStop(0,`hsl(${t.hue} 95% 80%)`); g.addColorStop(1,`hsl(${t.hue} 85% 45%)`); }
+    vctx.fillStyle=g; vctx.beginPath(); vctx.ellipse(x,y,rx,ry,0,0,Math.PI*2); vctx.fill();
+    vctx.beginPath(); vctx.moveTo(x-ry*.08,y+ry*1.08); vctx.lineTo(x+ry*.08,y+ry*1.08); vctx.lineTo(x,y+ry*.96); vctx.fill();
+    vctx.restore();
+  }
+  function drawBomb(t,now){
+    const H=view.height, x=t.x*view.width, y=t.y*H, R=t.r*H*.85;
+    vctx.save();
+    const g=vctx.createRadialGradient(x-R*.35,y-R*.35,R*.1,x,y,R);
+    g.addColorStop(0,'#6b6b78'); g.addColorStop(1,'#111118');
+    vctx.fillStyle=g; vctx.beginPath(); vctx.arc(x,y,R,0,Math.PI*2); vctx.fill();
+    vctx.strokeStyle='#E8302A'; vctx.lineWidth=R*.12; vctx.stroke(); // 빨간 테두리로 위험 표시
+    vctx.fillStyle='#333'; vctx.fillRect(x-R*.22,y-R*1.12,R*.44,R*.25);
+    vctx.strokeStyle='#C8A060'; vctx.lineWidth=R*.07; vctx.beginPath(); vctx.moveTo(x,y-R*1.1); vctx.quadraticCurveTo(x+R*.3,y-R*1.5,x+R*.5,y-R*1.35); vctx.stroke();
+    vctx.fillStyle=Math.sin(now/60)>0?'#FFD23F':'#FF6A00'; vctx.beginPath(); vctx.arc(x+R*.52,y-R*1.36,R*.14,0,Math.PI*2); vctx.fill(); // 불꽃
+    vctx.fillStyle='#fff'; vctx.font=`${R*.9|0}px "Black Han Sans",sans-serif`; vctx.textAlign='center'; vctx.textBaseline='middle'; vctx.fillText('!',x,y+R*.05);
+    vctx.restore();
+  }
+  function boardPath(R){ const w=R*1.3, h=R*.8; return [w,h]; }
+  function drawBoardShape(x,y,R,rot,clip){ // clip: 0 전체, -1 왼쪽 반, 1 오른쪽 반
+    const [w,h]=boardPath(R);
+    vctx.save(); vctx.translate(x,y); vctx.rotate(rot);
+    const x0=clip===1?0:-w, x1=clip===-1?0:w;
+    vctx.fillStyle='#D9A55B'; vctx.strokeStyle='#8A5A22'; vctx.lineWidth=Math.max(2,R*.05);
+    vctx.beginPath(); vctx.rect(x0,-h,x1-x0,h*2); vctx.fill(); vctx.stroke();
+    vctx.strokeStyle='rgba(138,90,34,.45)'; vctx.lineWidth=Math.max(1,R*.025);
+    for(let i=-2;i<=2;i++){ vctx.beginPath(); vctx.moveTo(x0,i*h*.38); vctx.bezierCurveTo(x0+(x1-x0)*.3,i*h*.38-h*.12,x0+(x1-x0)*.7,i*h*.38+h*.12,x1,i*h*.38); vctx.stroke(); }
+    if(!clip){ vctx.fillStyle='rgba(232,48,42,.85)'; vctx.beginPath(); vctx.arc(0,0,R*.16,0,Math.PI*2); vctx.fill(); }
+    vctx.restore();
+  }
+  function drawBoard(t,now){
+    vctx.save();
+    drawBoardShape(t.x*view.width,t.y*view.height,t.r*view.height,t.tilt,0);
+    vctx.restore();
+  }
+  function drawFx(now){
+    const H=view.height;
+    fx=fx.filter(f=>{
+      const age=now-f.born;
+      if(f.kind==='bit'){ if(age>500) return false; f.x+=f.vx; f.y+=f.vy; f.vy+=H*.0008;
+        vctx.fillStyle=`hsla(${f.hue},90%,60%,${1-age/500})`; vctx.beginPath(); vctx.arc(f.x,f.y,H*.008,0,Math.PI*2); vctx.fill(); }
+      else if(f.kind==='half'){ if(age>700) return false; f.x+=f.vx; f.y+=f.vy; f.vy+=H*.0009; f.rot+=f.vr*.3;
+        vctx.save(); vctx.globalAlpha=1-age/700; drawBoardShape(f.x,f.y,f.R,f.rot,f.s); vctx.restore(); }
+      else { if(age>800) return false;
+        vctx.save(); vctx.globalAlpha=1-age/800; vctx.fillStyle=f.color||'#FFC93C'; vctx.strokeStyle='rgba(6,35,94,.8)'; vctx.lineWidth=H*.008;
+        vctx.font=`${H*.09|0}px "Black Han Sans",sans-serif`; vctx.textAlign='center';
+        const yy=f.y-age/800*H*.1; vctx.strokeText(f.txt,f.x,yy); vctx.fillText(f.txt,f.x,yy); vctx.restore(); }
+      return true;
+    });
+  }
+
+  let lastCheck=0, lastSec=-1, lastT=0;
+  function loop(t){
+    requestAnimationFrame(loop);
+    if(!fit()) return;
+    const now=performance.now(), dt=Math.min(.1,(now-(lastT||now))/1000); lastT=now;
+    drawVideo(vctx,view.width,view.height);
+    if(running){
+      const left=Math.max(0,endAt-now), sec=Math.ceil(left/1000);
+      if(sec!==lastSec){ lastSec=sec; $('timeV').textContent=sec; $('time').classList.toggle('low',sec<=5); if(sec<=5&&sec>0) tone(660,.08,'square',.15); }
+      if(modeSel.value==='rain'){
+        for(const x of targets){ x.y+=fallSpeed()*x.vy*dt; x.x+=Math.sin(now/700+x.sway)*.0004; } // 살랑살랑 흔들리며 떨어짐
+        targets=targets.filter(x=>x.y-x.r*1.2<1.02); // 바닥 아래로 사라지면 끝
+        if(now>=nextSpawn&&targets.length<30) // 랜덤 간격으로 하나씩
+          nextSpawn=spawn(now)?now-Math.log(1-Math.random())*1000/rainRate():now+100;
+      }else{
+        targets=targets.filter(x=>now<x.born+x.life);
+        while(targets.length<+count.value&&spawnPop(now));
+      }
+      if(t-lastCheck>60){ lastCheck=t; detect(now); }
+      if(!left) endGame(false);
+      else if(+goal.value&&nBalloon+nBoard+nGold>=+goal.value) endGame(true);
+    }
+    for(const x of targets){
+      x.r=x.base*(1+(PULSE-1)*Math.sin(now*x.sp+x.ph));
+      vctx.globalAlpha=x.life?Math.max(0,Math.min(1,(now-x.born)/200,(x.born+x.life-now)/400)):1; // 곳곳에 나타나기: 스르륵 나타났다 사라짐
+      x.kind==='bomb'?drawBomb(x,now):x.board?drawBoard(x,now):drawBalloon(x,now);
+    }
+    vctx.globalAlpha=1;
+    if(now<flashUntil){ vctx.fillStyle=`rgba(232,48,42,${(flashUntil-now)/250*.35})`; vctx.fillRect(0,0,view.width,view.height); } // 폭탄 맞으면 화면이 빨갛게 번쩍
+    drawFx(now);
+  }
+
+  function setBig(txt,color){ big.textContent=txt; big.style.color=color||'#fff'; big.classList.remove('show'); void big.offsetWidth; big.classList.toggle('show',!!txt); }
+  function later(fn,ms){timers.push(setTimeout(fn,ms));}
+  // 점수판: 목표가 있으면 "깬 개수 / 목표"
+  const showScore=()=>($("scoreL").textContent=+goal.value?"격파":"점수", $("score").textContent=+goal.value?`${nBalloon+nBoard+nGold}/${goal.value}`:score);
+  function startGame(){
+    timers.forEach(clearTimeout); timers=[];
+    score=nBalloon=nBoard=nGold=nBomb=0; showScore(); $('timeV').textContent=dur.value; $('time').classList.remove('low');
+    targets=[]; fx=[]; recent=[]; nextSpawn=0; lastSec=-1;
+    $('settings').classList.remove('open'); $('result').classList.remove('show');
+    $('startBtn').hidden=true; $('stopBtn').hidden=false; stage.className='playing';
+    [3,2,1].forEach((n,i)=>later(()=>{setBig(n); tone(520,.15); if(i===0) say('준비');},i*1000));
+    later(()=>{ setBig('시작!','#FFC93C'); tone(1040,.3); say('시작'); prev=null; endAt=performance.now()+dur.value*1000; running=true; },3000);
+    later(()=>setBig(''),3700);
+  }
+  function stopGame(){
+    running=false; timers.forEach(clearTimeout); timers=[]; targets=[]; setBig('');
+    stage.className=''; $('startBtn').hidden=false; $('stopBtn').hidden=true;
+  }
+  function endGame(won){
+    const used=Math.round((dur.value*1000-(endAt-performance.now()))/1000), g=+goal.value, n=nBalloon+nBoard+nGold;
+    stopGame();
+    if(won){ [523,659,784,1047].forEach((f,i)=>later(()=>tone(f,.2),i*120)); say('목표 달성!'); }
+    else { tone(523,.2); later(()=>tone(392,.2),160); later(()=>tone(262,.5),320); say(`${score}점!`); }
+    $('resTitle').textContent=won?'목표 달성!':'시간 끝!';
+    $('score2').textContent=won?used+'초':score+'점';
+    $('detail').textContent=`풍선 ${nBalloon}개 · 송판 ${nBoard}장`+(nGold?` · 황금 ${nGold}개`:'')+(nBomb?` · 폭탄 ${nBomb}번`:'')+` · 총 ${score}점`+(g?` (목표 ${g}개 중 ${n}개)`:` (${dur.value}초)`);
+    // 기록: 목표 모드는 빨리 깬 시간, 아니면 점수
+    const key='gyeokpa-best-'+modeSel.value+'-'+dur.value+'-'+g; let best=0;
+    if(g){
+      try{ best=+localStorage.getItem(key)||0; if(won&&(!best||used<best)) localStorage.setItem(key,used); }catch(e){}
+      $('best').textContent=!won?'':best&&used>=best?`이 기기 최고 기록 ${best}초`:(best?`🎉 신기록! (이전 최고 ${best}초)`:'');
+      $('result').classList.add('show'); return;
+    }
+    try{ best=+localStorage.getItem(key)||0; if(score>best) localStorage.setItem(key,score); }catch(e){}
+    $('best').textContent=score>best?(best?`🎉 신기록! (이전 최고 ${best}점)`:''):`이 기기 최고 기록 ${best}점`;
+    $('result').classList.add('show');
+  }
+  $('startBtn').onclick=startGame; $('againBtn').onclick=startGame; $('stopBtn').onclick=stopGame;
+  $('closeBtn').onclick=()=>$('result').classList.remove('show');
+  /* 블루투스 마이크 등으로 "시작"이라고 말하면 시작 */ slgVoiceStart(()=>{ if(stream&&!running&&!$('startBtn').hidden) startGame(); });
+  window.addEventListener('keydown',e=>{ if(e.code==='Space'&&!e.target.closest('select,input,button')&&stream&&!running&&!$("startBtn").hidden){ e.preventDefault(); startGame(); } });
+})();
+</script>
+<script>
+// 설정 창이 위쪽 바(줄이 바뀌면 높아짐) 바로 아래에 붙도록 바 높이를 알려 줌
+new ResizeObserver(()=>document.getElementById('stage').style.setProperty('--barH',document.getElementById('bar').offsetHeight+'px')).observe(document.getElementById('bar'));
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "breaking": [
+    "mode",
+    "dur",
+    "goal",
+    "count",
+    "amount",
+    "speed",
+    "size",
+    "board",
+    "gold",
+    "bomb",
+    "sens",
+    "dist",
+    "mirror",
+    "againBtn"
+  ]
+}
