@@ -22,7 +22,7 @@ export default function Home() {
         />
         <View>
           <Text style={{ color: c.brand, fontWeight: "900", fontSize: 23 }}>
-            서린킷
+            서린툴
           </Text>
           <Text style={s.small}>수업에 필요한 모든 가능성</Text>
         </View>

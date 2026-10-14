@@ -34,7 +34,13 @@ export default function Detail() {
             app.status === "available" ? "무료로 시작하기" : "공개 준비 중"
           }
           disabled={app.status !== "available"}
-          onPress={() => router.push("/ox")}
+          onPress={() =>
+            router.push(
+              app.id === "ox"
+                ? "/ox"
+                : { pathname: "/game/[id]", params: { id: app.id } },
+            )
+          }
         />
       }
     >
