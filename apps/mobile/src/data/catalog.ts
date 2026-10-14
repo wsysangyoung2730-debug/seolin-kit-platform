@@ -51,6 +51,17 @@ export const catalog: MiniApp[] = [
     access: "free",
     runtime: "bundled-html",
   },
+  {
+    id: "wordchain",
+    name: "끝말잇기 배틀",
+    summary: "두 팀이 주고받는 짜릿한 단어 대결",
+    description:
+      "두 팀이 제한 시간 안에 단어를 이어 가요. 두음법칙·중복 단어 판정, 음성·직접 입력, 들린 말 인정·실패 처리, 단어 기록과 승리 팀 자동 점수를 제공해요.",
+    category: "education",
+    status: "available",
+    access: "free",
+    runtime: "bundled-html",
+  },
 ];
 export function filterCatalog(query: string, category: string) {
   const normalized = query.trim().toLocaleLowerCase();
