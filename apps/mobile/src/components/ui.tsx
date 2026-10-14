@@ -146,10 +146,14 @@ export function Back({ title }: { title: string }) {
     </View>
   );
 }
+const miniappImages: Record<string, number> = {
+  breaking: require("../../assets/breaking-icon.png"),
+  ox: require("../../assets/ox-icon.png"),
+};
 export function AppIcon({ id, size = 64 }: { id: string; size?: number }) {
-  return id === "ox" ? (
+  return miniappImages[id] ? (
     <Image
-      source={require("../../assets/ox-icon.png")}
+      source={miniappImages[id]}
       style={{ width: size, height: size, borderRadius: size * 0.24 }}
     />
   ) : (
@@ -158,21 +162,12 @@ export function AppIcon({ id, size = 64 }: { id: string; size?: number }) {
         width: size,
         height: size,
         borderRadius: size * 0.24,
-        backgroundColor:
-          id === "freeze"
-            ? "#E2F4EB"
-            : id === "initials"
-              ? "#EEE8FF"
-              : "#FFF0DE",
+        backgroundColor: c.soft,
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <Text
-        style={{ fontSize: size * 0.38, color: c.brand, fontWeight: "900" }}
-      >
-        {id === "initials" ? "ㄱㄴ" : id === "freeze" ? "꽃" : "격파"}
-      </Text>
+      <Icon name="game" size={size * 0.5} />
     </View>
   );
 }
