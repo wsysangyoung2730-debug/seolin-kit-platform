@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { Pressable, ScrollView, Text, TextInput, View } from "react-native";
 import { AppRow, Card, Copy, Page, Title, c, s } from "../../src/components/ui";
 import { categories, filterCatalog } from "../../src/data/catalog";
@@ -8,7 +8,11 @@ export default function Explore() {
   const [selected, setSelected] = useState<string | undefined>();
   const [query, setQuery] = useState("");
   const category = selected ?? params.category ?? "all";
-  useEffect(() => setSelected(undefined), [params.category]);
+  useFocusEffect(
+    useCallback(() => {
+      setSelected(undefined);
+    }, [params.category]),
+  );
   const results = filterCatalog(query, category);
   return (
     <Page>
