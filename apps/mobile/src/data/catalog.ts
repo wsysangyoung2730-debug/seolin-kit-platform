@@ -44,11 +44,12 @@ export const catalog: MiniApp[] = [
     id: "initials",
     name: "초성퀴즈",
     summary: "초성을 보고 함께 정답을 찾아요",
-    description: "수업 주제에 맞는 단어로 즐기는 초성퀴즈를 준비하고 있어요.",
+    description:
+      "2글자·3글자·혼합 초성과 내장 단어 사전으로 퀴즈를 진행해요. 음성 답변이나 직접 입력, 성공 인정·통과, 문제 시간·정답 수·문제 수를 설정할 수 있어요.",
     category: "education",
-    status: "coming-soon",
-    access: "undecided",
-    runtime: "native",
+    status: "available",
+    access: "free",
+    runtime: "bundled-html",
   },
 ];
 export function filterCatalog(query: string, category: string) {
