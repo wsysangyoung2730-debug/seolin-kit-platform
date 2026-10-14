@@ -14,5 +14,17 @@
     "dist",
     "mirror",
     "againBtn"
+  ],
+  "freeze": [
+    "speed",
+    "rate",
+    "sens",
+    "dist",
+    "hold",
+    "cam",
+    "sound",
+    "mirror",
+    "contBtn",
+    "resetBtn"
   ]
 }
