@@ -31,13 +31,14 @@ export default function GameCanvas({
   }
   useEffect(() => {
     alive.current = true;
+    let disposed = false;
     let module: ExpoSpeechRecognitionModuleType | undefined;
     const subscriptions: { remove: () => void }[] = [];
     if (voice)
       speechReady.current = import("expo-speech-recognition").then(
         ({ ExpoSpeechRecognitionModule: speech }) => {
           module = speech;
-          if (!alive.current) return speech;
+          if (disposed) return speech;
           subscriptions.push(
             speech.addListener("start", () =>
               inject("__seolinSpeech", "start", {}),
@@ -60,11 +61,17 @@ export default function GameCanvas({
         },
       );
     return () => {
-      web.current?.injectJavaScript("window.__seolinDispose?.();true;");
+      disposed = true;
+      const closingView = web.current;
       alive.current = false;
       subscriptions.forEach((subscription) => subscription.remove());
-      module?.abort();
-      void Speech.stop();
+      // React development mode may immediately re-run this effect without removing the view.
+      queueMicrotask(() => {
+        if (alive.current) return;
+        closingView?.injectJavaScript("window.__seolinDispose?.();true;");
+        module?.abort();
+        void Speech.stop();
+      });
     };
   }, [voice]);
   async function receive(raw: string) {
