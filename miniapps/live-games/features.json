@@ -49,5 +49,16 @@
     "failBtn",
     "word",
     "mirrorBtn"
+  ],
+  "memory": [
+    "folderInput",
+    "filesInput",
+    "cardCount",
+    "teamCount",
+    "preview",
+    "revealSeconds",
+    "revealBtn",
+    "shuffleBtn",
+    "newBtn"
   ]
 }
