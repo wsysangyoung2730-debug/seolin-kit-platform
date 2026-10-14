@@ -34,7 +34,7 @@ export default function Profile() {
           있어요.
         </Text>
       </Card>
-      <Text style={s.small}>서린킷 0.1.0 · 개발 버전</Text>
+      <Text style={s.small}>서린툴 0.1.0 · 개발 버전</Text>
     </Page>
   );
 }

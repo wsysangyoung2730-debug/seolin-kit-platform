@@ -197,7 +197,17 @@ export function AppRow({ app }: { app: MiniApp }) {
         </View>
       </Pressable>
       {app.status === "available" && (
-        <Button label="시작" secondary onPress={() => router.push("/ox")} />
+        <Button
+          label="시작"
+          secondary
+          onPress={() =>
+            router.push(
+              app.id === "ox"
+                ? "/ox"
+                : { pathname: "/game/[id]", params: { id: app.id } },
+            )
+          }
+        />
       )}
     </View>
   );
