@@ -62,6 +62,17 @@ export const catalog: MiniApp[] = [
     access: "free",
     runtime: "bundled-html",
   },
+  {
+    id: "memory",
+    name: "메모리 배틀",
+    summary: "우리 사진으로 만드는 기억력 대결",
+    description:
+      "사진을 골라 4~48장의 카드로 짝 맞추기를 해요. 2~4팀 대결, 기억·공개 시간, 번호 음성 선택, 다시 섞기와 점수 보정으로 수업을 진행해요.",
+    category: "game",
+    status: "available",
+    access: "free",
+    runtime: "bundled-html",
+  },
 ];
 export function filterCatalog(query: string, category: string) {
   const normalized = query.trim().toLocaleLowerCase();

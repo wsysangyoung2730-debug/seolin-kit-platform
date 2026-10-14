@@ -147,6 +147,7 @@ export function Back({ title }: { title: string }) {
   );
 }
 const miniappImages: Record<string, number> = {
+  memory: require("../../assets/memory-icon.png"),
   wordchain: require("../../assets/wordchain-icon.png"),
   initials: require("../../assets/initials-icon.png"),
   freeze: require("../../assets/freeze-icon.png"),
