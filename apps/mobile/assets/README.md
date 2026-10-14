@@ -10,3 +10,5 @@
 `countdown.wav`: 외부 파일을 재사용하지 않고 생성한 880Hz, 0.15초 모노 PCM 안내음. 마지막 3초 카운트에 사용한다. 음량과 TV 재생은 실기기 검증 후 조정한다.
 
 - `breaking-icon.png`: 가상격파 신규 로고. imagegen 내장 도구로 제작한 인디고 3D 아이콘.
+
+- `freeze-icon.png`: 무궁화꽃이 피었습니다 신규 로고. imagegen 내장 도구로 제작한 인디고 3D 아이콘.

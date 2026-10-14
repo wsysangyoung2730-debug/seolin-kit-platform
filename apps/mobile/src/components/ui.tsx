@@ -147,6 +147,7 @@ export function Back({ title }: { title: string }) {
   );
 }
 const miniappImages: Record<string, number> = {
+  freeze: require("../../assets/freeze-icon.png"),
   breaking: require("../../assets/breaking-icon.png"),
   ox: require("../../assets/ox-icon.png"),
 };
