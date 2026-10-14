@@ -1,0 +1,25 @@
+:root{--navy:#202d78;--ink:#172148;--yellow:#ffda67;--bg:#101b3b;--blue:#6877de;--card:#182747;--line:#ffffff22}
+html{color-scheme:dark;-webkit-text-size-adjust:100%;background:#101b3b}
+body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",sans-serif!important;background:#101b3b!important;margin:0}
+button,input,select,textarea{font-family:inherit!important;font-size:16px;box-sizing:border-box}
+button{min-height:44px;border-radius:14px!important;touch-action:manipulation}
+input:not([type=checkbox]):not([type=range]),select{min-height:44px}
+header{background:#16215c!important;border-color:#ffffff22!important}
+.panel,.settings,.sidebar{border-radius:20px!important}
+.stage{border-radius:22px;overflow:hidden}
+#word{display:block!important}
+#slg-nav{padding-bottom:env(safe-area-inset-bottom)}
+@media(max-width:760px){
+ .shell{display:flex!important;flex-direction:column!important;padding:10px!important;gap:12px!important}
+ .shell>.stage{width:100%!important;min-height:50vh}
+ .sidebar{width:auto!important;min-width:0!important}
+ .panel{max-width:calc(100vw - 24px)!important;padding:16px!important}
+ header{flex-wrap:wrap!important;gap:8px!important;padding:10px!important}
+ .num{flex-wrap:wrap}
+ #slg-score{max-width:calc(100vw - 24px)}
+}
+@media(orientation:landscape) and (max-height:540px){
+ header h1{font-size:18px!important;margin:4px!important}
+ .wrap{padding:8px!important}
+ .stage.full{border-radius:0}
+}

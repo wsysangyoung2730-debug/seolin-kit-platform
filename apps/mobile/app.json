@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "서린킷",
+    "name": "서린툴",
     "slug": "seolin-kit",
     "scheme": "seolinkit",
     "version": "0.1.0",
@@ -31,7 +31,7 @@
       [
         "expo-audio",
         {
-          "microphonePermission": false,
+          "microphonePermission": "게임의 음성 명령과 답변 인식을 위해 마이크 접근을 허용해 주세요.",
           "recordAudioAndroid": false,
           "enableBackgroundPlayback": false
         }
@@ -40,9 +40,16 @@
         "expo-camera",
         {
           "cameraPermission": "수업 화면에 실시간 카메라를 표시하려면 카메라 접근을 허용해 주세요. 영상은 저장하거나 전송하지 않습니다.",
-          "microphonePermission": false,
+          "microphonePermission": "게임의 음성 명령과 답변 인식을 위해 마이크 접근을 허용해 주세요.",
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": false
+        }
+      ],
+      [
+        "expo-speech-recognition",
+        {
+          "microphonePermission": "게임의 음성 명령과 답변 인식을 위해 마이크 접근을 허용해 주세요.",
+          "speechRecognitionPermission": "기기의 음성 서비스를 이용해 게임 명령과 답변을 인식합니다."
         }
       ]
     ],
