@@ -23,11 +23,11 @@ export const catalog: MiniApp[] = [
     name: "가상격파",
     summary: "수업을 신나게 만드는 격파 챌린지",
     description:
-      "가상 격파 수업 도구를 준비하고 있어요. 공개 후 자세한 사용 방법을 안내할게요.",
+      "카메라로 움직임을 감지해 풍선과 송판을 격파해요. 비 내리기·곳곳에 나타나기, 황금 풍선·폭탄, 속도·크기·거리·민감도를 조절하고 최고 기록에 도전해요.",
     category: "game",
-    status: "coming-soon",
-    access: "undecided",
-    runtime: "native",
+    status: "available",
+    access: "free",
+    runtime: "bundled-html",
   },
   {
     id: "freeze",

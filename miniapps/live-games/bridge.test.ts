@@ -121,3 +121,15 @@ it("preserves every bundled original byte and compiles every assembled script", 
       expect(() => new Script(match[1]!)).not.toThrow();
   }
 });
+
+it("keeps each game's complete settings and action controls", () => {
+  const root = new URL("./", import.meta.url);
+  const features: Record<string, string[]> = JSON.parse(
+    readFileSync(new URL("features.json", root), "utf8"),
+  );
+  for (const [id, controls] of Object.entries(features)) {
+    const source = readFileSync(new URL(`sources/${id}.html`, root), "utf8");
+    for (const control of controls)
+      expect(source, `${id}: ${control}`).toContain(`id="${control}"`);
+  }
+});
