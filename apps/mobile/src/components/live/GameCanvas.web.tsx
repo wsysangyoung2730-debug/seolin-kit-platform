@@ -7,9 +7,11 @@ export default function GameCanvas({
   onError,
 }: GameCanvasProps) {
   const frame = useRef<HTMLIFrameElement>(null);
+  const mounted = useRef(true);
   const callbacks = useRef({ onMessage, onError });
   callbacks.current = { onMessage, onError };
   useEffect(() => {
+    mounted.current = true;
     const child = frame.current;
     const receive = (event: MessageEvent) => {
       if (
@@ -26,7 +28,10 @@ export default function GameCanvas({
       window.removeEventListener("message", receive);
       const win = child?.contentWindow as
         (Window & { __seolinDispose?: () => void }) | null;
-      win?.__seolinDispose?.();
+      mounted.current = false;
+      queueMicrotask(() => {
+        if (!mounted.current) win?.__seolinDispose?.();
+      });
     };
   }, []);
   return (

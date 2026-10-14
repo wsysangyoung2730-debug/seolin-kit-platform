@@ -34,6 +34,7 @@ import {
   type BridgeMessage,
 } from "../../src/components/live/protocol";
 import { prepareDevices } from "../../src/components/live/permissions";
+import { createSessionGate } from "../../src/components/live/session-gate";
 const STORAGE = "seolin-live-games-v1";
 export default function LiveGame() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -51,22 +52,21 @@ export default function LiveGame() {
   const currentSession = useRef(false),
     externalActivity = useRef(false),
     mounted = useRef(true);
+  const sessionGate = useRef(createSessionGate()).current;
   const writes = useRef(Promise.resolve());
   const requestExit = useCallback(() => setExitOpen(true), []);
   useEffect(() => {
     mounted.current = true;
     return () => {
       mounted.current = false;
+      sessionGate.cancel();
     };
-  }, []);
+  }, [sessionGate]);
   useFocusEffect(
     useCallback(() => {
       const sub = AppState.addEventListener("change", (state) => {
-        if (
-          state === "background" &&
-          currentSession.current &&
-          !externalActivity.current
-        ) {
+        if (state === "background" && !externalActivity.current) {
+          sessionGate.cancel();
           currentSession.current = false;
           setSession(null);
           setExitOpen(false);
@@ -84,12 +84,13 @@ export default function LiveGame() {
             })
           : undefined;
       return () => {
+        sessionGate.cancel();
         sub.remove();
         back?.remove();
         currentSession.current = false;
         setSession(null);
       };
-    }, [requestExit]),
+    }, [requestExit, sessionGate]),
   );
   useEffect(() => {
     if (!session) return;
@@ -120,21 +121,32 @@ export default function LiveGame() {
     setBusy(true);
     setNotice("");
     try {
-      await writes.current;
-      const storage = decodeGameStorage(await AsyncStorage.getItem(STORAGE));
-      const devices = await prepareDevices(camera, voice);
-      if (!mounted.current) return;
-      setNotice(devices.note);
-      currentSession.current = true;
-      setSession({
-        html: buildGameDocument(source, {
-          native: Platform.OS !== "web",
-          camera: devices.camera,
-          voice: devices.voice,
-          storage,
-        }),
-        voice: devices.voice,
-      });
+      await sessionGate.run(
+        async (isCurrent) => {
+          await writes.current;
+          const storage = decodeGameStorage(
+            await AsyncStorage.getItem(STORAGE),
+          );
+          if (!isCurrent()) return null;
+          const devices = await prepareDevices(camera, voice, isCurrent);
+          return { storage, devices };
+        },
+        (result) => {
+          if (!result || !mounted.current) return;
+          const { storage, devices } = result;
+          setNotice(devices.note);
+          currentSession.current = true;
+          setSession({
+            html: buildGameDocument(source, {
+              native: Platform.OS !== "web",
+              camera: devices.camera,
+              voice: devices.voice,
+              storage,
+            }),
+            voice: devices.voice,
+          });
+        },
+      );
     } catch {
       setNotice(
         "저장 데이터를 읽지 못했어요. 기존 데이터를 보존했으니 다시 시도해 주세요.",

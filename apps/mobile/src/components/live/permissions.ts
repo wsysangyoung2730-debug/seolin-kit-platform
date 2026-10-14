@@ -1,7 +1,11 @@
 import { Camera } from "expo-camera";
-export async function prepareDevices(camera: boolean, voice: boolean) {
+export async function prepareDevices(
+  camera: boolean,
+  voice: boolean,
+  isCurrent = () => true,
+) {
   const notes: string[] = [];
-  if (camera) {
+  if (camera && isCurrent()) {
     try {
       camera = (await Camera.requestCameraPermissionsAsync()).granted;
     } catch {
@@ -12,10 +16,11 @@ export async function prepareDevices(camera: boolean, voice: boolean) {
         "카메라 권한을 허용하지 않았어요. 움직임 감지는 사용할 수 없어요.",
       );
   }
-  if (voice) {
+  if (voice && isCurrent()) {
     try {
       const { ExpoSpeechRecognitionModule: speech } =
         await import("expo-speech-recognition");
+      if (!isCurrent()) return { camera: false, voice: false, note: "" };
       voice =
         (await speech.requestPermissionsAsync()).granted &&
         speech.isRecognitionAvailable();
