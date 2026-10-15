@@ -117,6 +117,17 @@ export const catalog: MiniApp[] = [
     access: "free",
     runtime: "native",
   },
+  {
+    id: "taekwondo-pinball",
+    name: "띠 핀볼",
+    summary: "미트를 통통, 송판을 격파하고 행운의 칸까지",
+    description:
+      "태권도 도장 속 3D 핀볼 보드에 금색 공을 떨어뜨려요. 미트·송판·띠 경사로를 지나 도착한 칸으로 당첨과 꽝을 확인해요. 선물 이름과 당첨 칸을 설정하고 최근 50번의 결과를 이 기기에 저장해요.",
+    category: "game",
+    status: "available",
+    access: "free",
+    runtime: "bundled-html",
+  },
 ];
 export function filterCatalog(query: string, category: string) {
   const normalized = query.trim().toLocaleLowerCase();

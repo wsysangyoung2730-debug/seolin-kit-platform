@@ -1,0 +1,8 @@
+제작 방식: 내장 image_gen
+
+로고
+Create one polished app icon / logo mark for a Korean taekwondo pinball mini app, matching the reference's premium cute tactile 3D toy style. Square image. Solid deep navy rounded-square tile with generous corner rounding; at center one bright polished golden ball bouncing above a smooth broad BLUE stitched taekwondo belt shaped as an upward sweeping ramp, and a small RED round kicking-pad bumper below. Simple bold cohesive silhouette readable at small icon size, playful controlled gold sparkle accents, honey-oak thin edge accent, premium soft studio lighting. No letters, no words, no text, no extra objects, no full pinball board. Icon fills frame, opaque warm ivory corners outside rounded square.
+
+배경
+Use the supplied picture as a material and atmosphere reference. Generate a finished background image for a premium Korean taekwondo pinball mobile game. Landscape 16:9. Warm sunlit elegant Korean dojo interior: light honey oak floorboards leading to the back, cream plaster, wooden lattice windows at both far sides, tiny understated belt rack on far right, one small plant in a corner. The central two thirds are open quiet cream background with soft depth of field so a 3D game board can be overlaid clearly. No pinball machine, no person, no text, no calligraphy, no logos, no visible UI. Soft morning daylight, matte gentle contrast, cozy premium 3D toy render matching the reference, shallow studio-like shadows. Compose for both landscape and a center-cropped portrait background.
+

@@ -11,5 +11,7 @@ playwright-report/
 *.tsbuildinfo
 *.log
 .DS_Store
+miniapps/pinball/generated/
+apps/mobile/public/pinball/
 apps/mobile/android/
 apps/mobile/ios/

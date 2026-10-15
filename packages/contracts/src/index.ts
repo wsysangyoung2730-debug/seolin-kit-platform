@@ -9,7 +9,8 @@ export type MiniAppId =
   | "timer"
   | "teams"
   | "tabata"
-  | "lucky-draw";
+  | "lucky-draw"
+  | "taekwondo-pinball";
 export interface MiniApp {
   id: MiniAppId;
   name: string;

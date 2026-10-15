@@ -21,8 +21,19 @@ describe("classroom tool discovery", () => {
       expect(miniAppDestination(app)).toEqual(
         app.id === "ox"
           ? "/ox"
-          : { pathname: "/game/[id]", params: { id: app.id } },
+          : app.id === "taekwondo-pinball"
+            ? "/pinball"
+            : { pathname: "/game/[id]", params: { id: app.id } },
       );
     }
+  });
+  it("discovers pinball as a separate miniapp from lucky draw", () => {
+    const pinball = catalog.find((app) => app.id === "taekwondo-pinball");
+    expect(pinball?.runtime).toBe("bundled-html");
+    expect(miniAppDestination(pinball!)).toBe("/pinball");
+    expect(decodeLibrary('["taekwondo-pinball","lucky-draw"]')).toEqual([
+      "taekwondo-pinball",
+      "lucky-draw",
+    ]);
   });
 });

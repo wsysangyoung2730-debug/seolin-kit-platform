@@ -6,15 +6,17 @@
     "node": ">=22.13"
   },
   "scripts": {
-    "dev": "pnpm --filter @seolin/mobile start",
-    "android": "pnpm --filter @seolin/mobile android",
-    "android:prebuild": "pnpm --filter @seolin/mobile android:prebuild",
+    "dev": "pnpm pinball:build && pnpm --filter @seolin/mobile start",
+    "android": "pnpm pinball:build && pnpm --filter @seolin/mobile android",
+    "android:prebuild": "pnpm pinball:build && pnpm --filter @seolin/mobile android:prebuild",
     "android:studio": "pnpm android:prebuild && node scripts/open-android-studio.mjs",
-    "web": "pnpm --filter @seolin/mobile web",
-    "typecheck": "pnpm --filter @seolin/mobile typecheck",
+    "web": "pnpm pinball:build && pnpm --filter @seolin/mobile web",
+    "typecheck": "pnpm pinball:build && pnpm --filter @seolin/mobile typecheck",
     "test": "vitest run --passWithNoTests",
     "check": "pnpm typecheck && pnpm test",
-    "export": "pnpm --filter @seolin/mobile export"
+    "export": "pnpm pinball:build && pnpm --filter @seolin/mobile export",
+    "pinball:build": "pnpm --filter @seolin/pinball build",
+    "pinball:dev": "pnpm --filter @seolin/pinball dev"
   },
   "devDependencies": {
     "prettier": "^3.9.10",

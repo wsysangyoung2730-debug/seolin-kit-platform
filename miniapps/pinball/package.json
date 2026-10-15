@@ -1,0 +1,17 @@
+{
+  "name": "@seolin/pinball",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "node scripts/dev.mjs"
+  },
+  "dependencies": {
+    "three": "0.180.0",
+    "cannon-es": "0.20.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}

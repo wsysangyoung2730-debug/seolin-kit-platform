@@ -13,7 +13,7 @@
 
 ## 현재 구현 · 0.1.0 개발 버전
 
-Expo / React Native / TypeScript로 **모바일 플랫폼과 수업용 미니앱 10종**을 연결했다.
+Expo / React Native / TypeScript로 **모바일 플랫폼과 수업용 미니앱 11종**을 연결했다.
 
 - 홈·미니앱·내 앱·마이, 검색·카테고리, 앱별 상세·내 앱 보관함
 - 진입 타이포, 실제 로고·설명·준비 경로를 갖춘 오늘의 게임, 큰 이미지 카테고리 4종
@@ -28,7 +28,8 @@ Expo / React Native / TypeScript로 **모바일 플랫폼과 수업용 미니앱
 
 - 수업 도구: [타바타 타이머](docs/classroom-tabata.md) — 운동·휴식·세트 설정, 빠른 프리셋, 큰 시간 표시와 소리 안내
 - 수업 도구: [태권뽑기](docs/classroom-lucky-draw.md) — 컨셉별 생성 에셋과 9가지 조작, 상품·다음 기회 수량, 결과 기록·복원·소진 처리
-- 운명의 띠·격파 한 판·띠 핀볼은 3D 에셋 후속 작업으로 보류
+- 게임: [띠 핀볼](docs/taekwondo-pinball.md) — 제공 GLB 16종으로 구성한 독립 3D 미니앱, 공 낙하·충돌·당첨 칸 설정·최근 기록 저장
+- 운명의 띠·격파 한 판은 3D 에셋 후속 작업으로 보류
 
 ```sh
 pnpm install --frozen-lockfile

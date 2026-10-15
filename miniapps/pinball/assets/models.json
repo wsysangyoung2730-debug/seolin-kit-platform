@@ -1,0 +1,146 @@
+[
+  {
+    "id": "board",
+    "sourceNumber": 1,
+    "sourceFile": "01. 목재 보드 본체.glb",
+    "sourceSHA256": "93c61ea33a9b504afcf9e4ce15dc0c67bd04989064933fb12d482b96c88f38f6",
+    "originalBytes": 9570748,
+    "bytes": 376324,
+    "triangles": 2962
+  },
+  {
+    "id": "launcher",
+    "sourceNumber": 2,
+    "sourceFile": "02. 공 투입구.glb",
+    "sourceSHA256": "02a6ff3c1b5af9275ecd45e1ccf5df7304999d74d8ffd479e6ed07207c3723df",
+    "originalBytes": 18319856,
+    "bytes": 217284,
+    "triangles": 1070
+  },
+  {
+    "id": "ball",
+    "sourceNumber": 3,
+    "sourceFile": "03. 금색 공.glb",
+    "sourceSHA256": "74b8a90b926c90fa890666429ba8653b6486c6da53bcae870daff239a9a1518b",
+    "originalBytes": 3923460,
+    "bytes": 42544,
+    "triangles": 760
+  },
+  {
+    "id": "peg",
+    "sourceNumber": 4,
+    "sourceFile": "04. 목재 충돌 핀.glb",
+    "sourceSHA256": "e58366308c50326b83abcbcbc0a9f83763f9f51f4685731835f4463789ecd234",
+    "originalBytes": 13845676,
+    "bytes": 75208,
+    "triangles": 556
+  },
+  {
+    "id": "bumper-red",
+    "sourceNumber": 5,
+    "sourceFile": "05. 빨간 미트 범퍼.glb",
+    "sourceSHA256": "1614106c69f37440090c7f139a60673824a282540feb9e9af5934865c69b6831",
+    "originalBytes": 12510184,
+    "bytes": 190992,
+    "triangles": 640
+  },
+  {
+    "id": "bumper-blue",
+    "sourceNumber": 6,
+    "sourceFile": "06. 남색 미트 범퍼.glb",
+    "sourceSHA256": "077cdc4f9332a865cdd7780a90feffca13451f22c16699faa1c514db1c679125",
+    "originalBytes": 16425436,
+    "bytes": 238036,
+    "triangles": 576
+  },
+  {
+    "id": "cushion-red",
+    "sourceNumber": 7,
+    "sourceFile": "07.  빨간 삼각 쿠션.glb",
+    "sourceSHA256": "7659ac9e530232e3d6323fbf05580414f4bfa0d4c0e9a35c23cce75e4051c5d4",
+    "originalBytes": 12681636,
+    "bytes": 209660,
+    "triangles": 456
+  },
+  {
+    "id": "cushion-blue",
+    "sourceNumber": 8,
+    "sourceFile": "08. 남색 삼각 쿠션.glb",
+    "sourceSHA256": "6783efaff56e44fb24dcd69dbe48dad8d875ba27d9a84605a3330bdb9dab0afc",
+    "originalBytes": 15529100,
+    "bytes": 202968,
+    "triangles": 460
+  },
+  {
+    "id": "board-intact",
+    "sourceNumber": 9,
+    "sourceFile": "09. 격파 송판 · 온전한 상태.glb",
+    "sourceSHA256": "d0f31fda74ad5af2c14a2daae9774031094b59f3fe51f4f1e508673f5dc1f541",
+    "originalBytes": 15980096,
+    "bytes": 324748,
+    "triangles": 514
+  },
+  {
+    "id": "board-left",
+    "sourceNumber": 10,
+    "sourceFile": "10. 격파 송판 · 왼쪽 파편.glb",
+    "sourceSHA256": "67664e4f008bae5e5fec4be6cb1e493ee3d74f8751c9c90c33c4ee2d5615a47e",
+    "originalBytes": 17784872,
+    "bytes": 266676,
+    "triangles": 548
+  },
+  {
+    "id": "board-right",
+    "sourceNumber": 11,
+    "sourceFile": "11. 격파 송판 · 오른쪽 파편.glb",
+    "sourceSHA256": "11c9f7a055ded83869374ddf5b80b8e5f9912ffd0276f472d157bdc0eafe1ab4",
+    "originalBytes": 14981136,
+    "bytes": 227660,
+    "triangles": 551
+  },
+  {
+    "id": "belt-ramp",
+    "sourceNumber": 12,
+    "sourceFile": "12. 파란 띠 경사로.glb",
+    "sourceSHA256": "324527b1445b73a995dd301fdb3d7a65dd2ee94787b0c495c2096b4b42d1dc2e",
+    "originalBytes": 15593468,
+    "bytes": 379884,
+    "triangles": 3122
+  },
+  {
+    "id": "bin-win",
+    "sourceNumber": 13,
+    "sourceFile": "13. 당첨 수납 칸.glb",
+    "sourceSHA256": "cf583ba9917ab15aad144f7afaefaf91f7062b9588a3688988e05aee57b5cce7",
+    "originalBytes": 14041864,
+    "bytes": 221308,
+    "triangles": 464
+  },
+  {
+    "id": "bin-miss",
+    "sourceNumber": 14,
+    "sourceFile": "14. 꽝 수납 칸.glb",
+    "sourceSHA256": "f70980c3548cb684deea9d16907fb27e9df35878618d1c0b69d9bd3f428473a2",
+    "originalBytes": 12971872,
+    "bytes": 243844,
+    "triangles": 687
+  },
+  {
+    "id": "gift",
+    "sourceNumber": 15,
+    "sourceFile": "15. 금색 선물상자.glb",
+    "sourceSHA256": "3c5900ad016069c88077c9ca006d797b4ac132934d5614ae8599ea3c8a012de9",
+    "originalBytes": 18177812,
+    "bytes": 182892,
+    "triangles": 1102
+  },
+  {
+    "id": "side-cushion",
+    "sourceNumber": 25,
+    "sourceFile": "25. 긴 측면 쿠션.glb",
+    "sourceSHA256": "fdaa03de9497446f64563f80876ffdb38aa0e26a984e126e07bb1bed21e910b9",
+    "originalBytes": 14655748,
+    "bytes": 268956,
+    "triangles": 468
+  }
+]
