@@ -85,6 +85,12 @@ describe("classroom settings", () => {
         }).error,
       ).toBeTruthy();
     expect(
+      parseClassroom({
+        ...classroomFields(defaultClassroomSettings),
+        minutes: "100",
+      }).error,
+    ).toBeTruthy();
+    expect(
       validateClassroom({ ...defaultClassroomSettings, rounds: 31 }),
     ).toBeTruthy();
     expect(

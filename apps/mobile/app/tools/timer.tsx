@@ -158,7 +158,6 @@ export default function ClassroomTimer() {
             onChangeText={(value) => field("minutes", value)}
             disabled={disabled}
             large
-            maxLength={2}
           />
           <Text style={styles.colon}>:</Text>
           <Field
@@ -168,7 +167,6 @@ export default function ClassroomTimer() {
             onChangeText={(value) => field("seconds", value)}
             disabled={disabled}
             large
-            maxLength={2}
           />
         </View>
         <View style={styles.presets}>
@@ -221,7 +219,6 @@ export default function ClassroomTimer() {
             value={fields.preparation}
             onChangeText={(value) => field("preparation", value)}
             disabled={disabled}
-            maxLength={2}
           />
         </Setting>
         <View style={s.divider} />
@@ -232,7 +229,6 @@ export default function ClassroomTimer() {
             value={fields.rounds}
             onChangeText={(value) => field("rounds", value)}
             disabled={disabled}
-            maxLength={2}
           />
         </Setting>
         <View style={s.divider} />
@@ -250,7 +246,6 @@ export default function ClassroomTimer() {
             value={fields.rest}
             onChangeText={(value) => field("rest", value)}
             disabled={disabled}
-            maxLength={3}
           />
         </Setting>
         <View style={s.divider} />
@@ -325,7 +320,6 @@ function Field({
   accessibilityLabel,
   disabled,
   large = false,
-  maxLength,
 }: {
   value: string;
   onChangeText: (value: string) => void;
@@ -333,7 +327,6 @@ function Field({
   accessibilityLabel: string;
   disabled: boolean;
   large?: boolean;
-  maxLength: number;
 }) {
   return (
     <View style={[styles.field, large && { flex: 1 }]}>
@@ -343,7 +336,6 @@ function Field({
         onChangeText={onChangeText}
         keyboardType="number-pad"
         editable={!disabled}
-        maxLength={maxLength}
         selectTextOnFocus
         style={[
           styles.input,

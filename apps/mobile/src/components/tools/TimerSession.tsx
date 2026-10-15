@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   AppState,
   BackHandler,
@@ -12,7 +18,7 @@ import {
   useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Stack, useFocusEffect, useNavigation } from "expo-router";
+import { useFocusEffect, useNavigation } from "expo-router";
 import { usePreventRemove } from "expo-router/react-navigation";
 import { StatusBar } from "expo-status-bar";
 import { activateKeepAwakeAsync, deactivateKeepAwake } from "expo-keep-awake";
@@ -47,6 +53,11 @@ export default function TimerSession({ title, plan, sound, onExit }: Props) {
   const [dialog, setDialog] = useState<"exit" | "reset" | null>(null);
   const allowExit = useRef(false);
   const navigation = useNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({ gestureEnabled: false });
+    // Setup and session share a route; undo the stage override when returning to setup.
+    return () => navigation.setOptions({ gestureEnabled: true });
+  }, [navigation]);
   const pendingAction = useRef<
     Parameters<typeof navigation.dispatch>[0] | null
   >(null);
@@ -263,7 +274,6 @@ export default function TimerSession({ title, plan, sound, onExit }: Props) {
     );
   return (
     <SafeAreaView style={styles.page}>
-      <Stack.Screen options={{ gestureEnabled: false }} />
       <StatusBar style="light" />
       <ScrollView
         contentContainerStyle={[
