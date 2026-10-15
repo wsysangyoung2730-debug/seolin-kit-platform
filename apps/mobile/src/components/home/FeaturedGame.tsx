@@ -11,6 +11,7 @@ import type { MiniApp } from "@seolin/contracts";
 import { AppIcon, c } from "../ui";
 import { homeContent } from "../../data/home";
 import { categories } from "../../data/catalog";
+import { miniAppDestination } from "../../data/destinations";
 export default function FeaturedGame({ app }: { app: MiniApp }) {
   const { width, fontScale } = useWindowDimensions();
   const compact = width < 370,
@@ -165,14 +166,8 @@ export default function FeaturedGame({ app }: { app: MiniApp }) {
       </Pressable>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${app.name} 게임 준비하기`}
-        onPress={() =>
-          router.push(
-            app.id === "ox"
-              ? "/ox"
-              : { pathname: "/game/[id]", params: { id: app.id } },
-          )
-        }
+        accessibilityLabel={`${app.name} 준비하기`}
+        onPress={() => router.push(miniAppDestination(app))}
         style={({ pressed }) => [styles.start, { opacity: pressed ? 0.8 : 1 }]}
       >
         <Text
@@ -185,7 +180,7 @@ export default function FeaturedGame({ app }: { app: MiniApp }) {
             fontSize: wide ? 22 : 17,
           }}
         >
-          게임 준비하기
+          {app.category === "classroom" ? "수업 준비하기" : "게임 준비하기"}
         </Text>
         <Text style={{ color: c.brand, fontSize: 30 }}>→</Text>
       </Pressable>
