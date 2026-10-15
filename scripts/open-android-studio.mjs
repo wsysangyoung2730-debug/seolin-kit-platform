@@ -23,8 +23,8 @@ if (process.platform !== "darwin") {
     .filter(Boolean)
     .join(delimiter);
   const args = ["--env", `PATH=${studioPath}`];
-  if (process.env.ANDROID_HOME)
-    args.push("--env", `ANDROID_HOME=${process.env.ANDROID_HOME}`);
+  for (const name of ["ANDROID_HOME", "JAVA_HOME"])
+    if (process.env[name]) args.push("--env", `${name}=${process.env[name]}`);
   args.push("-a", "Android Studio", project);
   console.log(
     "Android Studio가 이미 실행 중이면 종료한 뒤 이 명령을 다시 실행해 주세요.",

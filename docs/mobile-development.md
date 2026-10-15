@@ -21,7 +21,7 @@ pnpm export     # Android/iOS/Web JavaScript 번들 생성
 
 ## Android Studio에서 열기
 
-Android Studio의 초기 설정에서 Android SDK와 에뮬레이터를 준비한다. Node.js 22.13 이상이 실행되는 터미널에서 저장소 루트의 다음 명령을 사용한다.
+Android Studio의 초기 설정에서 Android SDK와 에뮬레이터를 준비하고 **JDK 17**을 설치한다. [React Native 공식 환경 안내](https://reactnative.dev/docs/0.86/set-up-your-environment)의 권장 버전을 따른다. Node.js 22.13 이상이 실행되는 터미널에서 저장소 루트의 다음 명령을 사용한다.
 
 ```sh
 pnpm android:studio
@@ -37,6 +37,8 @@ pnpm android --port 8082    # 에뮬레이터/연결 기기에 빌드·설치하
 웹 미리보기가 8081 포트를 사용하는 경우 Android 개발 서버는 8082를 사용한다. Android Studio의 Run을 사용할 때도 JavaScript 개발 서버가 필요하다. `pnpm dev --port 8082`로 서버를 유지하고 기기의 해당 포트를 `adb reverse tcp:8082 tcp:8082`로 연결한다. 첫 실행은 `pnpm android --port 8082`가 빌드·설치·서버 연결을 함께 처리한다.
 
 생성된 `android`·`ios` 폴더, SDK 경로와 IDE 설정은 Git에 올리지 않는다. 네이티브 설정은 `app.json`·의존성·Expo 플러그인에 기록하고 prebuild로 재현한다. 생성 명령은 `--no-clean`을 사용해 기존 IDE·로컬 설정을 유지한다. 첫 Gradle 실행에서는 SDK·NDK 등 추가 도구를 내려받을 수 있다. APK가 만들어져도 카메라·음성·사진·TV 사용의 실기기 확인은 별도다.
+
+Android prebuild 플러그인은 Gradle daemon의 Java 버전을 17로 지정한다. 최신 Android Studio의 내장 Java 25로 자동 고정되면 네이티브 CMake 설정에서 `A restricted method in java.lang.System` 오류가 발생할 수 있다. Gradle daemon 기준은 `JAVA_HOME`보다 우선하므로 환경 변수만 바꾸지 말고 `pnpm android:prebuild`로 프로젝트 설정도 갱신한다. 설치된 JDK 17을 Gradle이 발견하지 못하면 `JAVA_HOME`에 해당 경로를 지정한다.
 
 ## 경계
 
