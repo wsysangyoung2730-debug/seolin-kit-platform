@@ -347,7 +347,7 @@ function reveal() {
   );
   signText = textSprite(
     outcome.won ? "당첨" : "꽝",
-    outcome.won ? "#6b441a" : "#fff6df",
+    outcome.won ? "#6b441a" : "#263b54",
   );
   signText.position.set(x, 2.16, boardZ + 0.16);
   medal.visible = outcome.won;
