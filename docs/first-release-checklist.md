@@ -57,3 +57,17 @@ O/X와 원본 HTML 기반 다섯 게임을 실행하도록 연결했다. 학생�
 - [ ] 실제 휴대폰·태블릿·TV에서 게임별 모든 설정·조작·게임 완료 확인
 
 브라우저 도구가 localhost 접근을 보안 정책으로 차단하여 개편 화면의 육안·조작 검증은 수행하지 않았다. 원본 코드 보존과 번들 검사는 실제 게임 동작 검증을 대신하지 않는다. 구체적인 기능 목록과 검증 동선은 [미니앱 통합 안내](live-games.md)에 기록한다.
+
+## Android Studio 개발 실행 (2026-10-15)
+
+- [x] Android native prebuild 및 Java 17 Gradle daemon 기준 생성
+- [x] TypeScript·자동 테스트 23개 통과
+- [x] Android debug APK 생성, ARM64 Android 17 / API 37 에뮬레이터 설치·실행
+- [x] Android Studio Gradle 동기화 및 Run 빌드 성공
+- [x] Running Devices에서 서린툴 홈·오늘의 게임·카테고리 이미지·하단 메뉴 표시 육안 확인
+- [x] 웹 8081과 Android 8082 개발 서버 분리 및 에뮬레이터 서버 연결
+- [ ] 에뮬레이터에서 게임별 전체 조작·회전·백그라운드·권한 흐름 검증
+- [ ] 실제 Android 기기의 카메라·음성·사진 선택·TV 미러링 검증
+- [ ] 출시용 서명 APK/AAB 및 iOS 빌드·스토어 제출 검증
+
+Android Studio 2026.2.1의 Java 25 daemon 고정으로 발생한 CMake 오류는 프로젝트의 daemon 기준을 Java 17로 지정하여 해결했다. `app.json`에 등록한 플러그인이 해당 설정과 개발 서버 포트 8082를 prebuild 때 재생성한다. 이번 APK는 개발용이며 스토어 배포 파일이 아니다. 앞선 브라우저 접근 제한은 그대로이며 이번 육안 확인은 Android Studio 에뮬레이터에서 수행했다.
