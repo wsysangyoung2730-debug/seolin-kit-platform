@@ -84,6 +84,17 @@ export const catalog: MiniApp[] = [
     access: "free",
     runtime: "native",
   },
+  {
+    id: "teams",
+    name: "팀 나누기 & 랜덤 뽑기",
+    summary: "함께할 팀과 오늘의 주인공을 공평하게",
+    description:
+      "명단을 입력하면 인원을 고르게 나누고 원하는 수만큼 무작위로 뽑아요. 동명이인 구분, 이전 당첨자 제외, 추첨 기록 초기화를 제공해요. 명단은 저장 버튼을 누를 때만 이 기기에 보관해요.",
+    category: "classroom",
+    status: "available",
+    access: "free",
+    runtime: "native",
+  },
 ];
 export function filterCatalog(query: string, category: string) {
   const normalized = query.trim().toLocaleLowerCase();
