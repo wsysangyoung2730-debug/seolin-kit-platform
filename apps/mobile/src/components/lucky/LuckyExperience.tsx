@@ -261,8 +261,14 @@ export default function LuckyExperience({
     if (!value) return;
     busy.current = false;
     stopAnimations();
+    // Backgrounding can stop a flip edge-on or leave a paper half pulled out.
+    // Manual reveal always restores the completed pose before showing the result.
+    motion.setValue(1);
+    unseal.setValue(1);
+    lift.setValue(mode === "uniforms" ? -100 : 0);
+    charge.setValue(0);
     if (mode === "roulette")
-      rotation.setValue(1 - ((value.selectedIndex ?? 0) + 0.5) / 6);
+      rotation.setValue(((6 - (value.selectedIndex ?? 0)) % 6) / 6);
     if (mode === "rotating")
       rotation.setValue(((5 - (value.selectedIndex ?? 0)) % 5) / 5);
     setResult(value);
@@ -277,7 +283,7 @@ export default function LuckyExperience({
     if (mode === "roulette") {
       finished = await animate(
         rotation,
-        4 - (index + 0.5) / 6,
+        4 - index / 6,
         1800,
         Easing.out(Easing.cubic),
       );
@@ -532,8 +538,8 @@ export default function LuckyExperience({
       { perspective: 800 },
       {
         rotateY: motion.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["0deg", "180deg"],
+          inputRange: [0, 0.5, 1],
+          outputRange: ["0deg", "90deg", "0deg"],
         }),
       },
     ],
@@ -553,8 +559,8 @@ export default function LuckyExperience({
       { perspective: 800 },
       {
         rotateY: unseal.interpolate({
-          inputRange: [0, 1],
-          outputRange: ["0deg", "180deg"],
+          inputRange: [0, 0.5, 1],
+          outputRange: ["0deg", "90deg", "0deg"],
         }),
       },
       {
@@ -676,7 +682,7 @@ export default function LuckyExperience({
                       style={[
                         styles.pullToken,
                         {
-                          left: 65 + (selected ?? 0) * 85 - 18,
+                          left: 65 + (selected ?? 0) * 85 - 36,
                           transform: [{ translateY: lift }],
                         },
                       ]}
@@ -707,7 +713,7 @@ export default function LuckyExperience({
                               {
                                 translateX: motion.interpolate({
                                   inputRange: [0, 0.22, 1],
-                                  outputRange: [0, -62, 0],
+                                  outputRange: [0, -32, 0],
                                 }),
                               },
                             ],
@@ -729,7 +735,7 @@ export default function LuckyExperience({
                               {
                                 translateY: motion.interpolate({
                                   inputRange: [0, 0.25, 0.8, 1],
-                                  outputRange: [-30, 0, 33, 33],
+                                  outputRange: [-18, 0, 20, 20],
                                 }),
                               },
                             ],
@@ -1132,14 +1138,14 @@ const styles = StyleSheet.create({
   pullToken: {
     position: "absolute",
     left: 119,
-    top: 118,
-    width: 64,
-    minHeight: 82,
+    top: 132,
+    width: 38,
+    minHeight: 50,
     backgroundColor: "#FFE1A0",
     borderRadius: 7,
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: "#FFF5D7",
-    padding: 8,
+    padding: 4,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -1147,12 +1153,13 @@ const styles = StyleSheet.create({
     color: "#202D78",
     fontWeight: "800",
     textAlign: "center",
-    lineHeight: 22,
+    fontSize: 11,
+    lineHeight: 15,
   },
   kickFoot: {
     position: "absolute",
-    left: 235,
-    top: 190,
+    left: 240,
+    top: 186,
     width: 54,
     height: 25,
     borderRadius: 12,
@@ -1165,8 +1172,8 @@ const styles = StyleSheet.create({
   kickText: { color: "#202D78", fontSize: 13, fontWeight: "800" },
   fallingCapsule: {
     position: "absolute",
-    left: 102,
-    top: 175,
+    left: 132,
+    top: 205,
     width: 36,
     height: 36,
   },
