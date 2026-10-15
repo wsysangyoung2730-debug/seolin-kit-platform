@@ -6,17 +6,20 @@
     "node": ">=22.13"
   },
   "scripts": {
-    "dev": "pnpm pinball:build && pnpm --filter @seolin/mobile start",
-    "android": "pnpm pinball:build && pnpm --filter @seolin/mobile android",
-    "android:prebuild": "pnpm pinball:build && pnpm --filter @seolin/mobile android:prebuild",
+    "dev": "pnpm miniapps:build && pnpm --filter @seolin/mobile start",
+    "android": "pnpm miniapps:build && pnpm --filter @seolin/mobile android",
+    "android:prebuild": "pnpm miniapps:build && pnpm --filter @seolin/mobile android:prebuild",
     "android:studio": "pnpm android:prebuild && node scripts/open-android-studio.mjs",
-    "web": "pnpm pinball:build && pnpm --filter @seolin/mobile web",
-    "typecheck": "pnpm pinball:build && pnpm --filter @seolin/mobile typecheck",
+    "web": "pnpm miniapps:build && pnpm --filter @seolin/mobile web",
+    "typecheck": "pnpm miniapps:build && pnpm --filter @seolin/mobile typecheck",
     "test": "vitest run --passWithNoTests",
     "check": "pnpm typecheck && pnpm test",
-    "export": "pnpm pinball:build && pnpm --filter @seolin/mobile export",
+    "export": "pnpm miniapps:build && pnpm --filter @seolin/mobile export",
     "pinball:build": "pnpm --filter @seolin/pinball build",
-    "pinball:dev": "pnpm --filter @seolin/pinball dev"
+    "pinball:dev": "pnpm --filter @seolin/pinball dev",
+    "breaking:build": "pnpm --filter @seolin/board-break build",
+    "breaking:dev": "pnpm --filter @seolin/board-break dev",
+    "miniapps:build": "pnpm pinball:build && pnpm breaking:build"
   },
   "devDependencies": {
     "prettier": "^3.9.10",

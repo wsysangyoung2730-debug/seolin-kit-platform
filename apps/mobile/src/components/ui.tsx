@@ -150,6 +150,7 @@ export function Back({ title }: { title: string }) {
   );
 }
 const miniappImages: Record<string, number> = {
+  "taekwondo-breaking": require("../../assets/board-break-icon.png"),
   "taekwondo-pinball": require("../../assets/pinball-icon.png"),
   memory: require("../../assets/memory-icon.png"),
   wordchain: require("../../assets/wordchain-icon.png"),

@@ -668,3 +668,18 @@ dialog form > .primary {
     transition: none !important;
   }
 }
+
+/* Keep the celebration character completely visible. */
+.result {
+  position: static;
+  transform: none;
+  max-width: none;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 14px;
+  padding: 12px 18px;
+  border-radius: 14px;
+}
+.result strong {
+  font-size: 23px;
+}

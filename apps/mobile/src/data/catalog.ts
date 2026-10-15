@@ -128,6 +128,17 @@ export const catalog: MiniApp[] = [
     access: "free",
     runtime: "bundled-html",
   },
+  {
+    id: "taekwondo-breaking",
+    name: "격파 한 판",
+    summary: "송판을 골라 힘차게! 발차기로 만나는 오늘의 행운",
+    description:
+      "세 장의 송판 중 하나를 골라 태권도 캐릭터와 함께 격파해요. 당첨이면 금빛 메달과 박수로 축하해요. 선물과 당첨 송판 수를 설정하고 최근 50번의 격파 기록을 이 기기에 저장해요.",
+    category: "game",
+    status: "available",
+    access: "free",
+    runtime: "bundled-html",
+  },
 ];
 export function filterCatalog(query: string, category: string) {
   const normalized = query.trim().toLocaleLowerCase();

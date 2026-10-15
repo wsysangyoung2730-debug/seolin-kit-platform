@@ -135,6 +135,7 @@ function refresh() {
   );
 }
 function controls() {
+  document.querySelector(".board-choices").hidden = phase === "result";
   const busy = phase === "kicking",
     disabled = !ready || busy || corrupt;
   document.querySelectorAll("[data-board]").forEach((b) => {
@@ -237,9 +238,9 @@ function disposeObject(object) {
 }
 function setIdle() {
   mixer.stopAllAction();
-  kickAction.reset().play();
-  kickAction.paused = true;
-  kickAction.time = 0;
+  clapAction.reset().play();
+  clapAction.paused = true;
+  clapAction.time = 0;
   mixer.update(0);
 }
 function newRound() {
@@ -260,7 +261,7 @@ function newRound() {
   selectionRing.visible = false;
   $("result").hidden = true;
   $("impact").hidden = true;
-  hero.position.set(-2.2, floorY, -0.25);
+  hero.position.set(-1.15, floorY, 0.45);
   hero.rotation.set(0, 0, 0);
   setIdle();
   controls();
@@ -284,6 +285,7 @@ function startKick() {
   phase = "kicking";
   elapsed = 0;
   hitDone = false;
+  hero.rotation.y = 0;
   heroStart = hero.position.x;
   heroTarget = boardX[selected] - 1.12;
   setIdle();
@@ -325,6 +327,8 @@ function impact() {
 }
 function reveal() {
   phase = "result";
+  hero.rotation.y = 0;
+  hero.position.z = 1.25;
   $("impact").hidden = true;
   $("result").hidden = false;
   $("result").classList.toggle("miss", !outcome.won);
@@ -369,7 +373,7 @@ function resize() {
   camera.aspect = aspect;
   camera.updateProjectionMatrix();
   const distance = Math.max(
-    13.0,
+    10.8,
     8.5 / (2 * Math.tan(THREE.MathUtils.degToRad(32 / 2)) * aspect),
   );
   camera.position.set(0, 1.55 + distance * 0.25, distance);
@@ -387,7 +391,7 @@ async function init() {
     renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.95;
+    renderer.toneMappingExposure = 0.88;
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     scene = new THREE.Scene();
@@ -523,6 +527,7 @@ function animate(now) {
         smooth = t * t * (3 - 2 * t);
       hero.position.x = THREE.MathUtils.lerp(heroStart, heroTarget, smooth);
       if (prev < 0.4 && elapsed >= 0.4) {
+        clapAction.stop();
         kickAction.reset().setLoop(THREE.LoopOnce, 1).play();
         kickAction.paused = false;
         kickAction.clampWhenFinished = true;
