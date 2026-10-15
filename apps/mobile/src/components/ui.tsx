@@ -159,7 +159,8 @@ const miniappImages: Record<string, number> = {
 };
 export function AppIcon({ id, size = 64 }: { id: string; size?: number }) {
   if (id === "tabata") return <TabataIcon size={size} />;
-  if (id === "timer") return <ClassroomIcon size={size} />;
+  if (id === "timer" || id === "teams")
+    return <ClassroomIcon kind={id} size={size} />;
   return miniappImages[id] ? (
     <Image
       source={miniappImages[id]}
