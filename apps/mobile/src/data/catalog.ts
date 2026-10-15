@@ -95,6 +95,17 @@ export const catalog: MiniApp[] = [
     access: "free",
     runtime: "native",
   },
+  {
+    id: "tabata",
+    name: "타바타 타이머",
+    summary: "운동과 휴식을 반복하며 함께 움직여요",
+    description:
+      "준비·운동·휴식 시간과 세트 수를 직접 설정하고 큰 숫자로 진행해요. 20초 운동·10초 휴식 프리셋, 소리 안내, 일시정지와 이어하기를 제공해요. 마지막 운동이 끝나면 휴식 없이 완료하며 앱을 벗어나면 자동으로 일시정지해요.",
+    category: "classroom",
+    status: "available",
+    access: "free",
+    runtime: "native",
+  },
 ];
 export function filterCatalog(query: string, category: string) {
   const normalized = query.trim().toLocaleLowerCase();

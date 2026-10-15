@@ -17,6 +17,7 @@ import type { MiniApp } from "@seolin/contracts";
 import { colors as c } from "@seolin/design-tokens";
 import { miniAppDestination } from "../data/destinations";
 import ClassroomIcon from "./ClassroomIcon";
+import TabataIcon from "./TabataIcon";
 export { c };
 export function Icon({
   name,
@@ -157,6 +158,7 @@ const miniappImages: Record<string, number> = {
   ox: require("../../assets/ox-icon.png"),
 };
 export function AppIcon({ id, size = 64 }: { id: string; size?: number }) {
+  if (id === "tabata") return <TabataIcon size={size} />;
   if (id === "timer" || id === "teams")
     return <ClassroomIcon kind={id} size={size} />;
   return miniappImages[id] ? (

@@ -7,7 +7,8 @@ export type MiniAppId =
   | "wordchain"
   | "memory"
   | "timer"
-  | "teams";
+  | "teams"
+  | "tabata";
 export interface MiniApp {
   id: MiniAppId;
   name: string;
