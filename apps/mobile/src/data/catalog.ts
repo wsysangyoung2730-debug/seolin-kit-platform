@@ -106,6 +106,17 @@ export const catalog: MiniApp[] = [
     access: "free",
     runtime: "native",
   },
+  {
+    id: "lucky-draw",
+    name: "태권뽑기",
+    summary: "아홉 가지 태권도 이야기로 만나는 오늘의 행운",
+    description:
+      "도복 캡슐, 돌려차기 룰렛, 미트, 사물함, 두루마리, 도복 주머니, 메달, 호랑이 복주머니, 회전 송판으로 상품을 뽑아요. 상품·다음 기회 수량과 결과를 이 기기에 저장하며 남은 수량만큼 공평하게 추첨해요.",
+    category: "classroom",
+    status: "available",
+    access: "free",
+    runtime: "native",
+  },
 ];
 export function filterCatalog(query: string, category: string) {
   const normalized = query.trim().toLocaleLowerCase();

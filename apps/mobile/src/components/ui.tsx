@@ -158,6 +158,25 @@ const miniappImages: Record<string, number> = {
   ox: require("../../assets/ox-icon.png"),
 };
 export function AppIcon({ id, size = 64 }: { id: string; size?: number }) {
+  if (id === "lucky-draw")
+    return (
+      <View
+        style={{
+          width: size,
+          height: size,
+          borderRadius: size * 0.24,
+          backgroundColor: c.brand,
+          padding: size * 0.07,
+          overflow: "hidden",
+        }}
+      >
+        <Image
+          source={require("../../assets/lucky/tiger.png")}
+          resizeMode="contain"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </View>
+    );
   if (id === "tabata") return <TabataIcon size={size} />;
   if (id === "timer" || id === "teams")
     return <ClassroomIcon kind={id} size={size} />;
