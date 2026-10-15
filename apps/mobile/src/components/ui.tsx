@@ -15,6 +15,8 @@ import { router } from "expo-router";
 import type { PropsWithChildren, ReactNode } from "react";
 import type { MiniApp } from "@seolin/contracts";
 import { colors as c } from "@seolin/design-tokens";
+import { miniAppDestination } from "../data/destinations";
+import ClassroomIcon from "./ClassroomIcon";
 export { c };
 export function Icon({
   name,
@@ -155,6 +157,7 @@ const miniappImages: Record<string, number> = {
   ox: require("../../assets/ox-icon.png"),
 };
 export function AppIcon({ id, size = 64 }: { id: string; size?: number }) {
+  if (id === "timer") return <ClassroomIcon size={size} />;
   return miniappImages[id] ? (
     <Image
       source={miniappImages[id]}
@@ -199,13 +202,7 @@ export function AppRow({ app }: { app: MiniApp }) {
         <Button
           label="시작"
           secondary
-          onPress={() =>
-            router.push(
-              app.id === "ox"
-                ? "/ox"
-                : { pathname: "/game/[id]", params: { id: app.id } },
-            )
-          }
+          onPress={() => router.push(miniAppDestination(app))}
         />
       )}
     </View>
