@@ -1,6 +1,13 @@
 export type Category = "game" | "education" | "editing" | "classroom";
 export type MiniAppId =
-  "ox" | "breaking" | "freeze" | "initials" | "wordchain" | "memory" | "timer";
+  | "ox"
+  | "breaking"
+  | "freeze"
+  | "initials"
+  | "wordchain"
+  | "memory"
+  | "timer"
+  | "tabata";
 export interface MiniApp {
   id: MiniAppId;
   name: string;

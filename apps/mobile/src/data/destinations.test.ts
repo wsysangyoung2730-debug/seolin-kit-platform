@@ -6,6 +6,7 @@ describe("classroom tool discovery", () => {
   it("opens available native tools outside the bundled HTML game runner", () => {
     const tools = filterCatalog("", "classroom");
     expect(tools.some((app) => app.id === "timer")).toBe(true);
+    expect(tools.some((app) => app.id === "tabata")).toBe(true);
     for (const app of tools) {
       expect(app.status).toBe("available");
       expect(app.runtime).toBe("native");
