@@ -7,6 +7,8 @@ import {
   freshState,
   decodeState,
   winningLanes,
+  selectedWinningLanes,
+  toggleWinningLane,
   recordDraw,
 } from "./state";
 
@@ -25,6 +27,7 @@ let state = freshState(),
   corrupt = false,
   storageWarning = "",
   ready = false,
+  drawing = false,
   disposed = false,
   paused = document.hidden;
 try {
@@ -73,8 +76,22 @@ function refresh() {
   $("sound").textContent = state.settings.sound ? "♪" : "♩";
   $("lane-legend").replaceChildren(
     ...Array.from({ length: 5 }, (_, i) => {
-      const e = document.createElement("span"),
-        won = winningLanes(state.settings.winningBins).includes(i);
+      const e = document.createElement("button"),
+        won = selectedWinningLanes(state.settings).includes(i);
+      e.type = "button";
+      e.disabled = !ready || drawing || corrupt;
+      e.setAttribute("aria-label", `${i + 1}번 칸 ${won ? "당첨" : "꽝"}`);
+      e.setAttribute("aria-pressed", String(won));
+      e.addEventListener("click", () => {
+        if (!ready || physics?.active || corrupt) return;
+        state.settings = toggleWinningLane(state.settings, i);
+        persist();
+        refresh();
+        makeLanes();
+        $("result").hidden = true;
+        $("lane-legend").children[i].focus();
+        status(`${i + 1}번 칸을 ${won ? "꽝" : "당첨"}으로 바꿨어요.`);
+      });
       e.className = won ? "win" : "";
       e.textContent = won ? "당첨" : "꽝";
       return e;
@@ -143,6 +160,7 @@ let renderer,
   camera,
   rig,
   ballMesh,
+  launcherMesh,
   breakBoard,
   fragments = [],
   laneObjects = [],
@@ -152,7 +170,8 @@ let renderer,
   observer;
 const loaded = {},
   abort = new AbortController();
-let brokenAt = null,
+let launchedAt = 0,
+  brokenAt = null,
   lastTime = 0;
 function fit(name, size, position = [0, 0, 0], rotation = [0, 0, 0]) {
   const content = loaded[name].clone(true);
@@ -202,7 +221,7 @@ function makeLanes() {
     });
   }
   laneObjects = [];
-  const winning = winningLanes(state.settings.winningBins);
+  const winning = selectedWinningLanes(state.settings);
   for (let i = 0; i < 5; i++) {
     const x = (i - 2) * 1.3,
       won = winning.includes(i);
@@ -214,10 +233,13 @@ function makeLanes() {
   }
 }
 function controls(active) {
+  drawing = active;
   $("drop").disabled = !ready || active || corrupt;
   $("launch-position").disabled = active;
   $("settings-open").disabled = active;
   $("history-clear").disabled = active;
+  for (const button of $("lane-legend").children)
+    button.disabled = !ready || active || corrupt;
   $("viewport").dataset.phase = active ? "drawing" : "ready";
   $("drop-label").textContent = active
     ? "공이 내려가고 있어요…"
@@ -231,10 +253,10 @@ function resize() {
     aspect = width / height;
   camera.aspect = aspect;
   camera.updateProjectionMatrix();
-  let distance = Math.max(27, 16 / aspect);
+  let distance = Math.max(25, 14 / aspect);
   const bounds = new THREE.Box3(
-    new THREE.Vector3(-3.9, -1.5, -10),
-    new THREE.Vector3(3.9, 1.7, 10),
+    new THREE.Vector3(-3.9, -1.1, -10),
+    new THREE.Vector3(3.9, 1.3, 10),
   );
   for (let pass = 0; pass < 4; pass++) {
     camera.position.set(0, distance * 0.78, distance * 0.63);
@@ -245,7 +267,7 @@ function resize() {
       for (const y of [bounds.min.y, bounds.max.y])
         for (const z of [bounds.min.z, bounds.max.z]) {
           const p = new THREE.Vector3(x, y, z).project(camera);
-          ratio = Math.max(ratio, Math.abs(p.x) / 0.92, Math.abs(p.y) / 0.92);
+          ratio = Math.max(ratio, Math.abs(p.x) / 0.97, Math.abs(p.y) / 0.97);
         }
     if (ratio <= 1) break;
     distance *= ratio * 1.02;
@@ -279,6 +301,7 @@ function launch() {
   effects = [];
   const x = Number($("launch-position").value) + (random() - 0.5) * 0.08;
   if (physics.launch(x, (random() - 0.5) * 2.6)) {
+    launchedAt = performance.now();
     ballMesh.visible = true;
     controls(true);
     tone(750, 0.09, 0.05);
@@ -395,7 +418,7 @@ async function boot() {
       return;
     }
     fit("board", [7.6, 0.65, 19.6], [0, -0.13, 0]);
-    fit("launcher", [1.1, 0.8, 1.75], [0, 0.1, -8.5]);
+    launcherMesh = fit("launcher", [1.1, 0.8, 1.75], [0, 0.1, -8.5]);
     for (const [x, z] of PEGS) fit("peg", [0.28, 0.5, 0.28], [x, 0.18, z]);
     BUMPERS.forEach(([x, z], i) =>
       fit(
@@ -433,7 +456,18 @@ async function boot() {
     fragments.forEach((f) => (f.visible = false));
     fit("belt-ramp", [2.15, 0.62, 1.0], [1.55, 0.17, 3.5], [0, -0.15, 0]);
     makeLanes();
-    ballMesh = fit("ball", [0.4, 0.4, 0.4], [0, 0.25, -8.4]);
+    ballMesh = fit("ball", [0.56, 0.56, 0.56], [0, 0.95, -8.4]);
+    ballMesh.traverse((mesh) => {
+      if (!mesh.isMesh) return;
+      mesh.material = new THREE.MeshStandardMaterial({
+        color: 0xffd44d,
+        metalness: 0.55,
+        roughness: 0.2,
+        emissive: 0xffb800,
+        emissiveIntensity: 0.28,
+        envMapIntensity: 1.3,
+      });
+    });
     physics = createPhysics(hit);
     ready = true;
     $("loading").hidden = true;
@@ -463,14 +497,20 @@ function animate(now) {
     if (physics?.active) {
       const outcome = physics.step(dt);
       const p = physics.ball.position;
-      ballMesh.position.set(p.x, 0.25, p.z);
+      const lift = Math.max(0, 1 - (now - launchedAt) / 350) * 0.7;
+      ballMesh.position.set(p.x, 0.25 + lift, p.z);
       ballMesh.rotation.x += physics.ball.velocity.z * dt * 2;
       ballMesh.rotation.z -= physics.ball.velocity.x * dt * 2;
       if (outcome) finish(outcome);
     } else if (ballMesh && $("result").hidden) {
-      ballMesh.position.x = Number($("launch-position").value);
-      ballMesh.position.y = 0.27 + Math.sin(now / 450) * 0.025;
+      ballMesh.position.set(
+        Number($("launch-position").value),
+        0.95 + Math.sin(now / 450) * 0.025,
+        -8.4,
+      );
     }
+    if (launcherMesh && !physics?.active)
+      launcherMesh.position.x = Number($("launch-position").value);
     if (brokenAt !== null) {
       const t = Math.min((now - brokenAt) / 450, 1);
       fragments.forEach((f, i) => {
@@ -515,6 +555,9 @@ const onParent = (e) => {
   } catch {}
 };
 window.addEventListener("message", onParent);
+$("launch-position").addEventListener("input", () => {
+  if (!physics?.active) $("result").hidden = true;
+});
 $("drop").addEventListener("click", launch);
 $("retry").addEventListener("click", () => location.reload());
 $("sound").addEventListener("click", () => {
@@ -537,10 +580,15 @@ $("settings-form").addEventListener("submit", (e) => {
     $("prize").focus();
     return;
   }
+  const count = Number($("winning-bins").value);
   state.settings = {
     ...state.settings,
     prize,
-    winningBins: Number($("winning-bins").value),
+    winningBins: count,
+    winningLaneIds:
+      count === state.settings.winningBins
+        ? selectedWinningLanes(state.settings)
+        : winningLanes(count),
   };
   persist();
   refresh();

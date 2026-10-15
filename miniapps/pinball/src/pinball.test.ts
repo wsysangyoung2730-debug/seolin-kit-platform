@@ -6,17 +6,23 @@ import {
   laneAt,
   recordDraw,
   winningLanes,
+  selectedWinningLanes,
+  toggleWinningLane,
 } from "./state";
 import { createPhysics } from "./physics.js";
 
 describe("pinball settings and records", () => {
   it("embeds saved prize text without HTML or replacement-string injection", () => {
-    const state = freshState(); state.settings.prize = "$&</script><script>";
-    const html = injectInitialState('let state="__INITIAL_PINBALL_STATE__";', state);
+    const state = freshState();
+    state.settings.prize = "$&</script><script>";
+    const html = injectInitialState(
+      'let state="__INITIAL_PINBALL_STATE__";',
+      state,
+    );
     expect(html).toContain("$&\\u003c/script>");
     expect(html).not.toContain("</script>");
     expect(html).not.toContain("__INITIAL_PINBALL_STATE__");
-    expect(JSON.parse(html.slice(10,-1))).toEqual(state);
+    expect(JSON.parse(html.slice(10, -1))).toEqual(state);
   });
   it("supports all-win and all-miss layouts without inventing a probability", () => {
     for (let n = 0; n <= 5; n++) expect(winningLanes(n)).toHaveLength(n);
@@ -34,6 +40,30 @@ describe("pinball settings and records", () => {
         recordDraw(none, i, "id", "2026-10-15T00:00:00Z").history[0]?.won,
       ).toBe(false);
     }
+  });
+  it("persists independent lane changes and uses them for results", () => {
+    const state = freshState();
+    state.settings = toggleWinningLane(state.settings, 1);
+    state.settings = toggleWinningLane(state.settings, 4);
+    expect(selectedWinningLanes(state.settings)).toEqual([3, 4]);
+    const restored = decodeState(JSON.stringify(state));
+    expect(
+      recordDraw(restored, 4, "win", "2026-10-15T00:00:00Z").history[0]?.won,
+    ).toBe(true);
+    expect(
+      recordDraw(restored, 1, "miss", "2026-10-15T00:00:00Z").history[0]?.won,
+    ).toBe(false);
+    expect(
+      selectedWinningLanes(decodeState(JSON.stringify(freshState())).settings),
+    ).toEqual([1, 3]);
+    expect(() =>
+      decodeState(
+        JSON.stringify({
+          ...state,
+          settings: { ...state.settings, winningLaneIds: [3, 3] },
+        }),
+      ),
+    ).toThrow();
   });
   it("retains the prize at draw time and only the latest 50 records", () => {
     let state = freshState();

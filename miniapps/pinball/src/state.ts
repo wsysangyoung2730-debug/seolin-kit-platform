@@ -6,6 +6,7 @@ export function injectInitialState(html: string, value: unknown): string {
 }
 export interface Settings {
   winningBins: number;
+  winningLaneIds?: number[];
   prize: string;
   sound: boolean;
 }
@@ -41,6 +42,19 @@ export function winningLanes(count: number): number[] {
     throw new Error("당첨 칸은 0~5개로 설정해 주세요.");
   return layouts[count]!;
 }
+/** Older saves use the preset layout; custom layouts keep each lane independent. */
+export function selectedWinningLanes(settings: Settings): number[] {
+  return settings.winningLaneIds ?? winningLanes(settings.winningBins);
+}
+export function toggleWinningLane(settings: Settings, lane: number): Settings {
+  if (!Number.isInteger(lane) || lane < 0 || lane > 4)
+    throw new Error("결과 칸 오류");
+  const selected = new Set(selectedWinningLanes(settings));
+  if (selected.has(lane)) selected.delete(lane);
+  else selected.add(lane);
+  const winningLaneIds = [...selected].sort((a, b) => a - b);
+  return { ...settings, winningBins: winningLaneIds.length, winningLaneIds };
+}
 export function laneAt(x: number) {
   if (!Number.isFinite(x)) throw new Error("공 위치 오류");
   return Math.max(0, Math.min(4, Math.floor((x + 3.25) / 1.3)));
@@ -58,6 +72,15 @@ export function decodeState(raw: string | null): SavedState {
   )
     throw new Error("저장 형식 오류");
   winningLanes(v.settings.winningBins);
+  const ids = v.settings.winningLaneIds;
+  if (
+    ids !== undefined &&
+    (!Array.isArray(ids) ||
+      ids.length !== v.settings.winningBins ||
+      new Set(ids).size !== ids.length ||
+      ids.some((lane) => !Number.isInteger(lane) || lane < 0 || lane > 4))
+  )
+    throw new Error("당첨 칸 설정 오류");
   if (
     typeof v.settings.prize !== "string" ||
     !v.settings.prize.trim() ||
@@ -95,7 +118,7 @@ export function recordDraw(
 ): SavedState {
   if (!Number.isInteger(lane) || lane < 0 || lane > 4)
     throw new Error("결과 칸 오류");
-  const won = winningLanes(state.settings.winningBins).includes(lane);
+  const won = selectedWinningLanes(state.settings).includes(lane);
   const draw = {
     id,
     at,

@@ -99,7 +99,7 @@ select:focus-visible {
   max-width: 1240px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 310px;
-  gap: 44px;
+  gap: 28px;
   margin: 0 auto;
   padding: 34px 36px 22px;
 }
@@ -311,7 +311,7 @@ h2 {
   display: flex;
   gap: 5px;
 }
-.lane-legend span {
+.lane-legend button {
   flex: 1;
   min-width: 0;
   background: #263d59;
@@ -321,7 +321,9 @@ h2 {
   padding: 10px 0;
   font-weight: 700;
   font-size: 11px;
+  border: 0;
   border-bottom: 3px solid #152a42;
+  min-height: 44px;
 }
 .lane-legend .win {
   background: #ebbf57;
@@ -637,7 +639,7 @@ dialog > p {
     font-size: 11px;
   }
   #viewport {
-    height: 490px;
+    height: 580px;
     margin-top: 0;
   }
   .play-controls {
@@ -681,7 +683,7 @@ dialog > p {
 }
 @media (max-width: 380px) {
   #viewport {
-    height: 440px;
+    height: 520px;
   }
   .brand span {
     display: none;
@@ -699,6 +701,16 @@ dialog > p {
 
 @media (min-width: 651px) {
   #viewport {
-    height: clamp(320px, calc(100dvh - 345px), 630px);
+    height: clamp(440px, calc(100dvh - 270px), 780px);
   }
+}
+
+.round-card > .lane-hint {
+  font-size: 11px;
+  color: #9b8873;
+  margin: 10px 0 0;
+}
+.lane-legend button:not(:disabled):hover {
+  filter: brightness(1.08);
+  transform: translateY(-2px);
 }
