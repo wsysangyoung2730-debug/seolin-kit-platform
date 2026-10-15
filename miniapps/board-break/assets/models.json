@@ -1,0 +1,120 @@
+[
+  {
+    "id": "character",
+    "sourceFile": "01. 태권도 캐릭터.glb",
+    "sourceSHA256": "b725381119036502e77c34c2f6438bec1091db41558c53dfc79c5b7ddfb27fa1",
+    "originalBytes": 16047140,
+    "bytes": 1432704,
+    "triangles": 13140,
+    "animations": []
+  },
+  {
+    "id": "board",
+    "sourceFile": "02. 온전한 격파 송판.glb",
+    "sourceSHA256": "4b082b8757458da422e70d2ed4d114d3ec0b936dc1c9ecc06b89a8893c07b9de",
+    "originalBytes": 13340388,
+    "bytes": 221616,
+    "triangles": 582,
+    "animations": []
+  },
+  {
+    "id": "fragment-left",
+    "sourceFile": "03. 송판 왼쪽 파편.glb",
+    "sourceSHA256": "3dc7dfc3a85a97b6b97e0d997dbd01428680e3d1ce19e2b2b693e836ef2af8f0",
+    "originalBytes": 16791168,
+    "bytes": 215672,
+    "triangles": 476,
+    "animations": []
+  },
+  {
+    "id": "fragment-right",
+    "sourceFile": "04. 송판 오른쪽 파편.glb",
+    "sourceSHA256": "8998c630de0e2d9b7169115ee16917ccbbe27f918f80883b45d93af2b3cc2810",
+    "originalBytes": 12190104,
+    "bytes": 210956,
+    "triangles": 514,
+    "animations": []
+  },
+  {
+    "id": "chips",
+    "sourceFile": "05. 작은 목재 파편.glb",
+    "sourceSHA256": "547a6944cfbd1d110b31dfb93b95f57128bb5e0a8a1c1496bac7d09168718e8f",
+    "originalBytes": 16163676,
+    "bytes": 237540,
+    "triangles": 714,
+    "animations": []
+  },
+  {
+    "id": "stand",
+    "sourceFile": "06. 남색 송판 받침대.glb",
+    "sourceSHA256": "374ad877c29d58b6aee4c837e9b610ee80e4c031ff95e7d85066d1c0e779ed5a",
+    "originalBytes": 12635508,
+    "bytes": 215468,
+    "triangles": 464,
+    "animations": []
+  },
+  {
+    "id": "medal",
+    "sourceFile": "07. 금색 별 메달.glb",
+    "sourceSHA256": "01c52b60e35e291402e530f8c16d531182b75b9f898ac3eab9aa714fba2a3efc",
+    "originalBytes": 7416192,
+    "bytes": 192552,
+    "triangles": 1445,
+    "animations": []
+  },
+  {
+    "id": "sign-win",
+    "sourceFile": "08. 당첨용 금색 팻말.glb",
+    "sourceSHA256": "e4629be8e84207cd4bd5df5d217c8410e973b393c9a27932084da93c5510b56d",
+    "originalBytes": 5517988,
+    "bytes": 118400,
+    "triangles": 532,
+    "animations": []
+  },
+  {
+    "id": "sign-miss",
+    "sourceFile": "09. 꽝용 남색 팻말.glb",
+    "sourceSHA256": "90f5c7731a38b27c0f6671a91ffdf131d3ca559e9431e1beaabb54d2e5f9161a",
+    "originalBytes": 6283688,
+    "bytes": 130336,
+    "triangles": 500,
+    "animations": []
+  },
+  {
+    "id": "stage",
+    "sourceFile": "10. 목재 격파 무대.glb",
+    "sourceSHA256": "c95ef54a1fbae3f39d01eb959e95da7fb10106e8e0891dda0de18f2fe89fbbfc",
+    "originalBytes": 10289864,
+    "bytes": 233776,
+    "triangles": 960,
+    "animations": []
+  },
+  {
+    "id": "character-clap",
+    "sourceFile": "태권도+캐릭터+(박수).glb",
+    "sourceSHA256": "5195b8df69e54b52a400171dab1d1c16d0bbfe79d1f4e21cfccfb8b384b1d2e5",
+    "originalBytes": 16208768,
+    "bytes": 1594128,
+    "triangles": 13140,
+    "animations": [
+      {
+        "name": "clap",
+        "seconds": 13.666666666666666
+      }
+    ]
+  },
+  {
+    "id": "character-kick",
+    "sourceFile": "태권도+캐릭터+(발차기).glb",
+    "sourceSHA256": "83431bee83ad6b64b49af833861a895d2147e738c49991f15c0895c33dbd551a",
+    "originalBytes": 15974460,
+    "bytes": 1359820,
+    "triangles": 13140,
+    "animations": [
+      {
+        "name": "front_kick_02",
+        "seconds": 1.375
+      }
+    ]
+  }
+]
