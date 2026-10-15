@@ -354,7 +354,6 @@ export default function TabataSetup() {
                 }}
                 keyboardType="number-pad"
                 selectTextOnFocus
-                maxLength={4}
                 editable={editable}
                 style={[s.input, styles.input]}
               />
