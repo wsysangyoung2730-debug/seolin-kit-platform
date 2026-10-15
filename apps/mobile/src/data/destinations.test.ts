@@ -8,6 +8,7 @@ describe("classroom tool discovery", () => {
     expect(tools.some((app) => app.id === "timer")).toBe(true);
     expect(tools.some((app) => app.id === "teams")).toBe(true);
     expect(tools.some((app) => app.id === "tabata")).toBe(true);
+    expect(tools.some((app) => app.id === "lucky-draw")).toBe(true);
     for (const app of tools) {
       expect(app.status).toBe("available");
       expect(app.runtime).toBe("native");

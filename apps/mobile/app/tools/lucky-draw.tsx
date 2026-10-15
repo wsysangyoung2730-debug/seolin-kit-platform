@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
+  Image,
   Modal,
   Pressable,
   StyleSheet,
@@ -20,6 +21,7 @@ import {
   s,
 } from "../../src/components/ui";
 import LuckyExperience from "../../src/components/lucky/LuckyExperience";
+import { luckyAssets } from "../../src/components/lucky/assets";
 import {
   createLuckyState,
   defaultLuckyState,
@@ -569,9 +571,12 @@ export default function LuckyDraw() {
                     },
                   ]}
                 >
-                  <Text style={styles.modeNumber}>
-                    {String(index + 1).padStart(2, "0")}
-                  </Text>
+                  <Image
+                    source={luckyAssets[item.id]}
+                    resizeMode="contain"
+                    style={{ width: "100%", height: 108 }}
+                    accessibilityIgnoresInvertColors
+                  />
                 </View>
                 <Text style={styles.modeLabel}>{item.label}</Text>
                 <Text style={styles.modeMood}>{item.mood}</Text>
@@ -780,14 +785,14 @@ const styles = StyleSheet.create({
     gap: 9,
   },
   modeBadge: {
-    width: 52,
-    height: 52,
+    width: "100%",
+    height: 124,
+    padding: 8,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 3,
   },
-  modeNumber: { color: c.brand, fontWeight: "800", fontSize: 23 },
   modeLabel: { color: c.text, fontSize: 19, fontWeight: "800" },
   modeMood: { color: c.accent, fontWeight: "700", fontSize: 12 },
   modeInstruction: { color: c.muted, fontSize: 13, lineHeight: 20, flex: 1 },

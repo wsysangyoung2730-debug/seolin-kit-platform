@@ -8,7 +8,8 @@ export type MiniAppId =
   | "memory"
   | "timer"
   | "teams"
-  | "tabata";
+  | "tabata"
+  | "lucky-draw";
 export interface MiniApp {
   id: MiniAppId;
   name: string;
