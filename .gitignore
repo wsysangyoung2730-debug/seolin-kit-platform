@@ -15,3 +15,6 @@ miniapps/pinball/generated/
 apps/mobile/public/pinball/
 apps/mobile/android/
 apps/mobile/ios/
+
+miniapps/board-break/generated/
+apps/mobile/public/board-break/

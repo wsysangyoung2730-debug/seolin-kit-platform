@@ -124,6 +124,16 @@ importers:
         specifier: ~5.9.3
         version: 5.9.3
 
+  miniapps/board-break:
+    dependencies:
+      three:
+        specifier: 0.180.0
+        version: 0.180.0
+    devDependencies:
+      esbuild:
+        specifier: 0.28.2
+        version: 0.28.2
+
   miniapps/ox: {}
 
   miniapps/pinball:
