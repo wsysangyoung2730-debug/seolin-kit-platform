@@ -7,6 +7,9 @@
   },
   "scripts": {
     "dev": "pnpm --filter @seolin/mobile start",
+    "android": "pnpm --filter @seolin/mobile android",
+    "android:prebuild": "pnpm --filter @seolin/mobile android:prebuild",
+    "android:studio": "pnpm android:prebuild && node scripts/open-android-studio.mjs",
     "web": "pnpm --filter @seolin/mobile web",
     "typecheck": "pnpm --filter @seolin/mobile typecheck",
     "test": "vitest run --passWithNoTests",

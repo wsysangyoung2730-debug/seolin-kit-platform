@@ -19,6 +19,27 @@ pnpm export     # Android/iOS/Web JavaScript 번들 생성
 
 `export`는 APK/IPA 생성이나 스토어 출시 검증이 아니다. 기기 권한, 회전, 음향, 백그라운드 복귀, TV 미러링은 실제 Android·iPhone에서 따로 확인한다.
 
+## Android Studio에서 열기
+
+Android Studio의 초기 설정에서 Android SDK와 에뮬레이터를 준비하고 **JDK 17**을 설치한다. [React Native 공식 환경 안내](https://reactnative.dev/docs/0.86/set-up-your-environment)의 권장 버전을 따른다. Node.js 22.13 이상이 실행되는 터미널에서 저장소 루트의 다음 명령을 사용한다.
+
+```sh
+pnpm android:studio
+```
+
+`apps/mobile/android`를 생성하고 해당 폴더를 Android Studio로 연다. macOS에서는 현재 사용 중인 Node.js 경로를 IDE에 전달해 Gradle 동기화에서 `node`를 찾지 못하는 오류를 피한다. **Android Studio가 이미 실행 중이라면 종료한 뒤 명령을 실행한다.** 시스템 전역 PATH는 변경하지 않는다. Windows·Linux에서는 출력된 폴더를 Android Studio의 Open에서 선택한다.
+
+```sh
+pnpm android:prebuild       # 프로젝트 생성·네이티브 설정 갱신만 수행
+pnpm android               # 에뮬레이터/연결 기기에 빌드·설치하고 개발 서버 실행 (8082)
+```
+
+웹 미리보기는 8081, Android 개발 서버는 8082를 사용한다. Android Studio의 Run도 같은 서버를 쓰도록 생성되는 Gradle 속성에 8082를 지정한다. Run을 사용할 때는 `pnpm dev --port 8082`로 JavaScript 서버를 유지하고 기기의 해당 포트를 `adb reverse tcp:8082 tcp:8082`로 연결한다. 첫 실행은 `pnpm android`가 빌드·설치·서버 연결을 함께 처리한다.
+
+생성된 `android`·`ios` 폴더, SDK 경로와 IDE 설정은 Git에 올리지 않는다. 네이티브 설정은 `app.json`·의존성·Expo 플러그인에 기록하고 prebuild로 재현한다. 생성 명령은 `--no-clean`을 사용해 기존 IDE·로컬 설정을 유지한다. 첫 Gradle 실행에서는 SDK·NDK 등 추가 도구를 내려받을 수 있다. APK가 만들어져도 카메라·음성·사진·TV 사용의 실기기 확인은 별도다.
+
+Android prebuild 플러그인은 Gradle daemon의 Java 버전을 17로 지정한다. 최신 Android Studio의 내장 Java 25로 자동 고정되면 네이티브 CMake 설정에서 `A restricted method in java.lang.System` 오류가 발생할 수 있다. Gradle daemon 기준은 `JAVA_HOME`보다 우선하므로 환경 변수만 바꾸지 말고 `pnpm android:prebuild`로 프로젝트 설정도 갱신한다. 설치된 JDK 17을 Gradle이 발견하지 못하면 `JAVA_HOME`에 해당 경로를 지정한다.
+
 ## 경계
 
 - `apps/mobile`: Expo Router 기반 플랫폼 화면 및 네이티브 기기 연결

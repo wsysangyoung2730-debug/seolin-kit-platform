@@ -22,6 +22,7 @@
     },
     "plugins": [
       "expo-router",
+      "./plugins/withAndroidBuildJdk.cjs",
       [
         "expo-screen-orientation",
         {
