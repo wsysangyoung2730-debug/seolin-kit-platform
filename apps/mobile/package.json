@@ -5,7 +5,7 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo run:android",
+    "android": "expo run:android --port 8082",
     "android:prebuild": "expo prebuild --platform android --no-install --no-clean --skip-dependency-update react,react-native",
     "ios": "expo run:ios",
     "web": "expo start --web",

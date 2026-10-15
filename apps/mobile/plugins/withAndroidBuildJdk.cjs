@@ -1,8 +1,24 @@
-const { withDangerousMod } = require("expo/config-plugins");
+const {
+  withDangerousMod,
+  withGradleProperties,
+} = require("expo/config-plugins");
 const { mkdir, writeFile } = require("node:fs/promises");
 const path = require("node:path");
 
 module.exports = function withAndroidBuildJdk(config) {
+  config = withGradleProperties(config, (config) => {
+    config.modResults = config.modResults.filter(
+      (item) =>
+        item.type !== "property" || item.key !== "reactNativeDevServerPort",
+    );
+    // Android Studio Run must connect to the same Metro port as the CLI.
+    config.modResults.push({
+      type: "property",
+      key: "reactNativeDevServerPort",
+      value: "8082",
+    });
+    return config;
+  });
   return withDangerousMod(config, [
     "android",
     async (config) => {

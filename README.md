@@ -29,7 +29,7 @@ pnpm install --frozen-lockfile
 pnpm dev      # Expo 모바일 개발 서버
 pnpm web      # 화면 검증용 브라우저 미리보기
 pnpm android:studio  # 네이티브 프로젝트 생성 후 Android Studio 열기 (macOS)
-pnpm android --port 8082  # Android 개발 빌드·설치·실행
+pnpm android  # Android 개발 빌드·설치·실행 (8082)
 pnpm check    # 타입 검사 및 단위 테스트
 pnpm export   # Android / iOS / Web JS 번들
 ```

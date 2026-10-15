@@ -31,10 +31,10 @@ pnpm android:studio
 
 ```sh
 pnpm android:prebuild       # 프로젝트 생성·네이티브 설정 갱신만 수행
-pnpm android --port 8082    # 에뮬레이터/연결 기기에 빌드·설치하고 개발 서버 실행
+pnpm android               # 에뮬레이터/연결 기기에 빌드·설치하고 개발 서버 실행 (8082)
 ```
 
-웹 미리보기가 8081 포트를 사용하는 경우 Android 개발 서버는 8082를 사용한다. Android Studio의 Run을 사용할 때도 JavaScript 개발 서버가 필요하다. `pnpm dev --port 8082`로 서버를 유지하고 기기의 해당 포트를 `adb reverse tcp:8082 tcp:8082`로 연결한다. 첫 실행은 `pnpm android --port 8082`가 빌드·설치·서버 연결을 함께 처리한다.
+웹 미리보기는 8081, Android 개발 서버는 8082를 사용한다. Android Studio의 Run도 같은 서버를 쓰도록 생성되는 Gradle 속성에 8082를 지정한다. Run을 사용할 때는 `pnpm dev --port 8082`로 JavaScript 서버를 유지하고 기기의 해당 포트를 `adb reverse tcp:8082 tcp:8082`로 연결한다. 첫 실행은 `pnpm android`가 빌드·설치·서버 연결을 함께 처리한다.
 
 생성된 `android`·`ios` 폴더, SDK 경로와 IDE 설정은 Git에 올리지 않는다. 네이티브 설정은 `app.json`·의존성·Expo 플러그인에 기록하고 prebuild로 재현한다. 생성 명령은 `--no-clean`을 사용해 기존 IDE·로컬 설정을 유지한다. 첫 Gradle 실행에서는 SDK·NDK 등 추가 도구를 내려받을 수 있다. APK가 만들어져도 카메라·음성·사진·TV 사용의 실기기 확인은 별도다.
 
