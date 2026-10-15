@@ -44,6 +44,7 @@ let renderer,
   hero,
   heroRig,
   mixer,
+  guardAction,
   kickAction,
   clapAction,
   selectionRing;
@@ -55,7 +56,9 @@ let sign,
   fragments = [],
   particles = [];
 let heroStart = -2.2,
-  heroTarget = -2.2;
+  heroTarget = -2.2,
+  readyMoveTime = 0,
+  readyFacingStart = 0;
 const loaded = {},
   abort = new AbortController();
 const boardX = [-2.35, 0, 2.35],
@@ -236,11 +239,49 @@ function disposeObject(object) {
     }
   });
 }
+function createGuardAction(clip) {
+  kickAction.reset().play();
+  kickAction.paused = true;
+  kickAction.time = 0;
+  mixer.update(0);
+  // Keep the kick's staggered stance, with elbows bent and fists at chest height.
+  const aim = (name, childName, target) => {
+    const bone = heroRig.getObjectByName(`mixamorig${name}`);
+    const child = heroRig.getObjectByName(`mixamorig${childName}`);
+    hero.updateMatrixWorld(true);
+    const origin = bone.getWorldPosition(new THREE.Vector3());
+    const current = child
+      .getWorldPosition(new THREE.Vector3())
+      .sub(origin)
+      .normalize();
+    const desired = heroRig
+      .localToWorld(new THREE.Vector3(...target))
+      .sub(origin)
+      .normalize();
+    const parent = bone.parent.getWorldQuaternion(new THREE.Quaternion());
+    const delta = new THREE.Quaternion().setFromUnitVectors(current, desired);
+    bone.quaternion.premultiply(
+      parent.clone().invert().multiply(delta).multiply(parent),
+    );
+  };
+  aim("LeftArm", "LeftForeArm", [0.08, 0.43, -0.04]);
+  aim("LeftForeArm", "LeftHand", [0.18, 0.56, -0.025]);
+  aim("RightArm", "RightForeArm", [-0.06, 0.43, 0.09]);
+  aim("RightForeArm", "RightHand", [0.08, 0.56, 0.09]);
+  const tracks = clip.tracks.map((track) => {
+    const copy = track.clone();
+    copy.times = new Float32Array([0]);
+    const [name, property] = track.name.split(".");
+    const node = heroRig.getObjectByName(name);
+    copy.values = new Float32Array(node[property].toArray());
+    return copy;
+  });
+  return mixer.clipAction(new THREE.AnimationClip("ready-guard", 1, tracks));
+}
 function setIdle() {
   mixer.stopAllAction();
-  clapAction.reset().play();
-  clapAction.paused = true;
-  clapAction.time = 0;
+  guardAction.reset().play();
+  guardAction.paused = true;
   mixer.update(0);
 }
 function newRound() {
@@ -262,7 +303,9 @@ function newRound() {
   $("result").hidden = true;
   $("impact").hidden = true;
   hero.position.set(-1.15, floorY, 0.45);
-  hero.rotation.set(0, 0, 0);
+  hero.rotation.set(0, -Math.PI / 2, 0);
+  heroStart = heroTarget = hero.position.x;
+  readyMoveTime = 0;
   setIdle();
   controls();
   status("마음이 가는 송판을 하나 골라 보세요.");
@@ -270,6 +313,10 @@ function newRound() {
 function selectBoard(index) {
   if (!ready || phase !== "ready" || corrupt) return;
   selected = index;
+  heroStart = hero.position.x;
+  heroTarget = boardX[index] - 1.12;
+  readyFacingStart = hero.rotation.y;
+  readyMoveTime = 0;
   selectionRing.visible = true;
   selectionRing.position.x = boardX[index];
   controls();
@@ -358,7 +405,10 @@ function reveal() {
     clapAction.reset().setLoop(THREE.LoopRepeat, Infinity).play();
     clapAction.crossFadeFrom(kickAction, 0.2, true);
     [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.24, 0.035, i * 0.12));
-  } else setIdle();
+  } else {
+    hero.rotation.y = -Math.PI / 2;
+    setIdle();
+  }
   controls();
   status(
     outcome.won
@@ -497,6 +547,7 @@ async function init() {
     kickAction.setLoop(THREE.LoopOnce, 1);
     kickAction.clampWhenFinished = true;
     clapAction = mixer.clipAction(loaded["character-clap"].animations[0]);
+    guardAction = createGuardAction(loaded["character-kick"].animations[0]);
     ready = true;
     $("loading").hidden = true;
     $("viewport").dataset.ready = "true";
@@ -520,7 +571,13 @@ function animate(now) {
   const dt = Math.min((now - lastTime) / 1000, 0.05);
   lastTime = now;
   if (!paused) {
-    if (phase === "kicking") {
+    if (phase === "ready" && selected >= 0) {
+      readyMoveTime = Math.min(readyMoveTime + dt, 0.35);
+      const t = readyMoveTime / 0.35,
+        smooth = t * t * (3 - 2 * t);
+      hero.position.x = THREE.MathUtils.lerp(heroStart, heroTarget, smooth);
+      hero.rotation.y = THREE.MathUtils.lerp(readyFacingStart, 0, smooth);
+    } else if (phase === "kicking") {
       const prev = elapsed;
       elapsed += dt;
       const t = Math.min(elapsed / 0.4, 1),
@@ -531,6 +588,7 @@ function animate(now) {
         kickAction.reset().setLoop(THREE.LoopOnce, 1).play();
         kickAction.paused = false;
         kickAction.clampWhenFinished = true;
+        kickAction.crossFadeFrom(guardAction, 0.15, false);
       }
       if (elapsed >= 0.4) mixer.update(dt);
       if (elapsed >= 1.22 && !hitDone) impact();
