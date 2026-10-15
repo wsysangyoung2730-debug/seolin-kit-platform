@@ -8,6 +8,17 @@ export const categories = [
 ] as const;
 export const catalog: MiniApp[] = [
   {
+    id: "timer",
+    name: "수업 타이머",
+    summary: "활동과 휴식, 반복 수업을 한눈에",
+    description:
+      "수업 시간과 준비·휴식·반복 횟수를 설정하고 큰 숫자로 진행해요. 일시정지와 이어하기, 마지막 카운트 안내음을 제공해요. 설정은 이 기기에 저장하며, 앱을 벗어나면 자동으로 일시정지해요.",
+    category: "classroom",
+    status: "available",
+    access: "free",
+    runtime: "native",
+  },
+  {
     id: "ox",
     name: "O/X 게임",
     summary: "생각하고, 움직이고, 함께 맞히는 퀴즈",

@@ -12,7 +12,8 @@ import {
   c,
   s,
 } from "../../src/components/ui";
-import { catalog } from "../../src/data/catalog";
+import { catalog, categories } from "../../src/data/catalog";
+import { miniAppDestination } from "../../src/data/destinations";
 import { useLibrary } from "../../src/state/library";
 export default function Detail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,13 +35,7 @@ export default function Detail() {
             app.status === "available" ? "무료로 시작하기" : "공개 준비 중"
           }
           disabled={app.status !== "available"}
-          onPress={() =>
-            router.push(
-              app.id === "ox"
-                ? "/ox"
-                : { pathname: "/game/[id]", params: { id: app.id } },
-            )
-          }
+          onPress={() => router.push(miniAppDestination(app))}
         />
       }
     >
@@ -73,7 +68,7 @@ export default function Detail() {
           <View>
             <Text style={s.small}>카테고리</Text>
             <Text style={s.heading}>
-              {app.category === "education" ? "교육" : "게임"}
+              {categories.find((item) => item.id === app.category)?.name}
             </Text>
           </View>
           <View>
